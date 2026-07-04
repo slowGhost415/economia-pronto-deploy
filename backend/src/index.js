@@ -12,6 +12,7 @@ import systemRoutes from './routes/systemRoutes.js';
 import transacaoRoutes from './routes/transacaoRoutes.js';
 import metaRoutes from './routes/metaRoutes.js';
 import investimentoRoutes from './routes/investimentoRoutes.js';
+import ensureDatabase from './services/ensureDatabase.js';
 
 dotenv.config();
 
@@ -98,6 +99,11 @@ if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 4000;
   app.listen(PORT, () => {
     console.log(`Backend rodando em http://localhost:${PORT}`);
+    if (process.env.DATABASE_URL) {
+      ensureDatabase()
+        .then(() => console.log('Banco verificado e pronto'))
+        .catch((err) => console.error('Falha ao preparar banco:', err));
+    }
   });
 }
 
