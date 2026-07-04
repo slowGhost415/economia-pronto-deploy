@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build": "npm --prefix backend ci && npm --prefix frontend ci && npm --prefix backend run prisma:generate && npm --prefix frontend run build",
-    "render:build": "npm --prefix backend install && npm --prefix frontend install && npm --prefix backend run db:push && npm --prefix frontend run build",
-    "render:start": "npm --prefix backend start",
+    "render:build": "npm --prefix backend install && npm --prefix frontend install && npm --prefix backend run prisma:generate && npm --prefix frontend run build",
+    "render:start": "npm --prefix backend run db:push && npm --prefix backend start",
     "db:push": "cd backend && npx prisma db push",
     "start": "npm --prefix backend start",
     "dev": "python main.py"
