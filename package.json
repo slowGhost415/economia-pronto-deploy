@@ -9,7 +9,7 @@
     "dev": "python main.py"
   },
   "engines": {
-    "node": ">=18"
+    "node": "20.x"
   },
   "devDependencies": {
     "playwright": "^1.61.1"
