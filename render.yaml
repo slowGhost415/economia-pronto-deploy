@@ -8,8 +8,7 @@ services:
   - type: web
     name: economia-site
     runtime: node
-    buildCommand: npm --prefix backend ci && npm --prefix frontend ci && npm --prefix backend run prisma:generate && npm --prefix frontend run build
-    preDeployCommand: cd backend && npx prisma db push
+    buildCommand: npm --prefix backend ci && npm --prefix frontend ci && cd backend && npx prisma db push && cd .. && npm --prefix frontend run build
     startCommand: npm --prefix backend start
     healthCheckPath: /api/health
     plan: free
