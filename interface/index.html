@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Econômica Cariri</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="index">
+
+<header>
+    <div class="header-top">
+        <div>
+            <h1>📊 Análise Econômica Cariri</h1>
+            <p>Explore como a Selic, a inflação e os preços de produtos afetam o cotidiano das famílias do Cariri.</p>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link active">Início</a>
+            <a href="analise.html" class="nav-link">Análise</a>
+            <a href="dados.html" class="nav-link">Dados</a>
+        </nav>
+        <button id="btnTema" class="btn-tertiary" type="button" title="Alternar tema">🌙</button>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="card">
+        <h2>🎯 Objetivo</h2>
+        <p>Este sistema apresenta uma visão integrada do comportamento da <strong>Taxa Selic</strong>, da <strong>inflação (IPCA)</strong> e dos preços de produtos e serviços essenciais. A ideia é mostrar como os indicadores macroeconômicos se refletem no bolso das famílias do Cariri.</p>
+    </div>
+
+    <div class="card">
+        <h2>📌 Painel Rápido</h2>
+        <div class="flex-container">
+            <div class="flex-item">
+                <div class="indicador">
+                    <div class="indicador-titulo">📈 Selic (último)</div>
+                    <div class="indicador-valor" id="selicAtual">-</div>
+                </div>
+            </div>
+            <div class="flex-item">
+                <div class="indicador">
+                    <div class="indicador-titulo">📊 Inflação (IPCA)</div>
+                    <div class="indicador-valor" id="inflacaoAtual">-</div>
+                </div>
+            </div>
+            <div class="flex-item">
+                <div class="indicador">
+                    <div class="indicador-titulo">📉 Tendência</div>
+                    <div class="indicador-valor" id="tendenciaAtual">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🚀 Acesso Rápido</h2>
+        <div class="flex-container">
+            <div class="flex-item"><a class="btn" href="analise.html">Análise Avançada</a></div>
+            <div class="flex-item"><a class="btn" href="dados.html">Tabelas e Histórico</a></div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <p><strong>Análise Econômica Cariri</strong> | Dados de 2025/2026</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="dados.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Avançada - Cariri</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.1.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+
+<body data-page="analise">
+
+<header>
+    <div class="header-top">
+        <div>
+            <h1> Análise Avançada</h1>
+            <p>Construa cenários, compare variáveis e entenda as tendências do mercado e da política monetária.</p>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">Início</a>
+            <a href="analise.html" class="nav-link active">Análise</a>
+            <a href="dados.html" class="nav-link">Dados</a>
+        </nav>
+        <button id="btnTema" class="btn-tertiary" type="button" title="Alternar tema"></button>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="card">
+        <h2> Configuração da Análise</h2>
+        <p>Escolha quais variáveis devem ser exibidas no gráfico e quais produtos você quer comparar.</p>
+        <div class="flex-container">
+            <div class="flex-item">
+                <h3>Variáveis</h3>
+                <label class="checkbox"><input type="checkbox" id="chkPrecos" checked> Preços</label>
+                <label class="checkbox"><input type="checkbox" id="chkSelic" checked> Selic</label>
+                <label class="checkbox"><input type="checkbox" id="chkInflacao" checked> Inflação (IPCA)</label>
+            </div>
+            <div class="flex-item">
+                <h3>Período</h3>
+                <select id="filtroPeriodo">
+                    <option value="12">Últimos 12 meses</option>
+                    <option value="6">Últimos 6 meses</option>
+                    <option value="3">Últimos 3 meses</option>
+                    <option value="all">Todo histórico</option>
+                </select>
+                <button class="btn" id="btnAtualizarDados">Atualizar dados (API)</button>
+                <div style="margin-top: 10px; font-size: 0.9em; color: var(--cor-texto-claro);">
+                    <span>Última atualização: </span><span id="dataAtualizacao">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2> Seleção de Produtos</h2>
+        <p>Use a caixa de busca para encontrar rapidamente um produto e marcar/desmarcar seus dados.</p>
+        <div class="search-container">
+            <input type="text" id="buscaProduto" placeholder="Buscar produto...">
+            <button class="btn" id="btnBuscarProduto">Buscar</button>
+        </div>
+        <div id="produtosLista" class="produtos-lista"></div>
+    </div>
+
+    <div class="card">
+        <h2> Gráfico Interativo</h2>
+        <div class="chart-actions" style="display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom: 12px;">
+            <button id="btnExportPNG" class="btn btn-tertiary" type="button">Exportar PNG</button>
+            <button id="btnImprimir" class="btn btn-tertiary" type="button">Imprimir relatório</button>
+        </div>
+        <div class="chart-container">
+            <canvas id="graficoAnalise"></canvas>
+        </div>
+        <div id="insights" class="insights"></div>
+    </div>
+
+    <div class="card">
+        <h2> Comparação Produto vs Produto</h2>
+        <p>Compare preços e calcule correlação entre dois itens.</p>
+        <div class="flex-container" style="align-items:flex-end; gap: 15px;">
+            <div class="flex-item" style="min-width: 180px;">
+                <label for="selectProdA">Produto A</label>
+                <select id="selectProdA"></select>
+            </div>
+            <div class="flex-item" style="min-width: 180px;">
+                <label for="selectProdB">Produto B</label>
+                <select id="selectProdB"></select>
+            </div>
+            <div class="flex-item" style="flex:1;">
+                <div class="insights" id="comparacaoInfo">Selecione dois produtos para ver a correlação.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2> Análise Automática</h2>
+        <p id="analiseText">Selecione variáveis e produtos para gerar explicações sobre tendências.</p>
+    </div>
+
+</main>
+
+<footer>
+    <p><strong>Análise Econômica Cariri</strong> | Ferramentas de análise econômica</p>
+</footer>
+
+<script src="dados.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

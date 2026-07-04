@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados Econômicos - Cariri</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="dados">
+
+<header>
+    <div class="header-top">
+        <div>
+            <h1> Dados Econômicos</h1>
+            <p>Histórico completo de preços, inflação e Selic para análise comparativa.</p>
+        </div>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-link">Início</a>
+            <a href="analise.html" class="nav-link">Análise</a>
+            <a href="dados.html" class="nav-link active">Dados</a>
+        </nav>
+        <button id="btnTema" class="btn-tertiary" type="button" title="Alternar tema">🌙</button>
+    </div>
+</header>
+
+<main class="container">
+
+    <div class="card">
+        <div style="display:flex; align-items:center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <h2 style="margin:0;"> Preços Mensais</h2>
+            <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+                <button id="btnExportCSV" class="btn btn-tertiary" type="button">Exportar CSV</button>
+                <button id="btnImprimirDados" class="btn btn-tertiary" type="button">Imprimir relatório</button>
+            </div>
+        </div>
+        <p>Valores dos principais produtos e serviços (em R$) por período.</p>
+        <div id="tabelaPrecos"></div>
+    </div>
+
+    <div class="card">
+        <h2> Variações</h2>
+        <p>Variação em valor e percentual entre o primeiro e o último mês do conjunto de dados.</p>
+        <div id="tabelaVariacao"></div>
+    </div>
+
+    <div class="card">
+        <h2> Taxa Selic</h2>
+        <p>Histórico mensal da taxa Selic (fonte: Banco Central do Brasil).</p>
+        <div id="tabelaSelic"></div>
+    </div>
+
+</main>
+
+<footer>
+    <p><strong>Análise Econômica Cariri</strong> | Dados de 2025/2026</p>
+</footer>
+
+<script src="dados.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  nome         String
+  email        String        @unique
+  senha        String
+  data_criacao DateTime      @default(now())
+  interactions Interaction[]
+  transacoes   Transacao[]
+  metas        Meta[]
+  investimentos Investimento[]
+}
+
+model Interaction {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  tipo_acao String
+  descricao String
+  data      DateTime @default(now())
+}
+
+model Transacao {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  tipo      String
+  categoria String
+  descricao String
+  valor     Float
+  data      DateTime @default(now())
+}
+
+model Meta {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  nome        String
+  valorAlvo   Float
+  valorAtual  Float    @default(0)
+  prazo       DateTime
+  criada_em   DateTime @default(now())
+}
+
+model Investimento {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  nome        String
+  tipo        String
+  valor       Float
+  taxa        Float
+  data_inicio DateTime @default(now())
+}

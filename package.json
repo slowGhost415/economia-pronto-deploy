@@ -1,0 +1,17 @@
+{
+  "name": "economia-site",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix backend ci && npm --prefix frontend ci && npm --prefix backend run prisma:generate && npm --prefix frontend run build",
+    "db:push": "cd backend && npx prisma db push",
+    "start": "npm --prefix backend start",
+    "dev": "python main.py"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "playwright": "^1.61.1"
+  }
+}

@@ -1,0 +1,24 @@
+databases:
+  - name: economia-db
+    databaseName: economia
+    user: economia
+    plan: free
+
+services:
+  - type: web
+    name: economia-site
+    runtime: node
+    buildCommand: npm --prefix backend ci && npm --prefix frontend ci && npm --prefix backend run prisma:generate && npm --prefix frontend run build
+    preDeployCommand: cd backend && npx prisma db push
+    startCommand: npm --prefix backend start
+    healthCheckPath: /api/health
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: economia-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
