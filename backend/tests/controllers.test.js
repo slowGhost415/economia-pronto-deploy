@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import prisma from '../src/services/prismaClient.js';
 import { signup, login } from '../src/controllers/authController.js';
 import { criarTransacao, listarTransacoes } from '../src/controllers/transacaoController.js';
