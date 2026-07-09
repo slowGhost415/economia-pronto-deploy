@@ -458,6 +458,7 @@ button.secondary-btn:hover {
 }
 
 .analise-page .ec-card {
+  min-width: 0;
   padding: 30px;
   border-color: rgba(241, 245, 249, 0.13);
   background:
@@ -708,27 +709,93 @@ button.secondary-btn:hover {
 }
 
 .analise-chart-card {
+  min-width: 0;
   padding: 34px;
 }
 
-.analise-chart-card > h2 {
-  display: inline-block;
-  margin-right: 18px;
+.analise-chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.analise-chart-header h2 {
+  margin-bottom: 10px;
+}
+
+.analise-chart-header p,
+.analise-chart-note {
+  max-width: 760px;
+  margin: 0;
+  color: #aebccd;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .analise-chart-card .ec-chart-actions {
   justify-content: flex-end;
-  margin: -48px 0 20px;
+  margin: 0;
+  flex: 0 0 auto;
 }
 
 .analise-chart-card .ec-chart-container {
-  min-height: 470px;
-  padding: 22px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 560px;
+  padding: 18px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.analise-chart-frame {
+  position: relative;
+  min-width: 920px;
+  height: 520px;
+}
+
+.analise-chart-note {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(44, 242, 255, 0.16);
+  border-radius: var(--radius-md);
+  background: rgba(44, 242, 255, 0.055);
 }
 
 .analise-compare-card .ec-indicador-card {
   padding: 20px;
   box-shadow: none;
+}
+
+.analise-comparison-metrics,
+.analise-comparison-detail-grid {
+  margin-top: 20px !important;
+}
+
+.analise-comparison-stat,
+.analise-range-panel {
+  border-color: rgba(241, 245, 249, 0.12);
+  background: rgba(5, 6, 10, 0.34);
+}
+
+.analise-comparison-stat .ec-indicador-valor {
+  text-align: right;
+}
+
+.analise-range-panel {
+  min-height: 154px;
+}
+
+.analise-range-panel .ec-indicador-label {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(241, 245, 249, 0.08);
+}
+
+.analise-comparison-insight {
+  border-color: rgba(64, 216, 138, 0.18);
+  background: rgba(64, 216, 138, 0.07);
 }
 
 .analise-compare-card .ec-indicador-label {
@@ -751,6 +818,50 @@ button.secondary-btn:hover {
 
 .analise-auto-card .ec-insights {
   font-size: 1.05rem;
+}
+
+.analise-summary-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.analise-summary-panel {
+  padding: 22px;
+  border: 1px solid rgba(241, 245, 249, 0.12);
+  border-radius: var(--radius-lg);
+  background: rgba(5, 6, 10, 0.34);
+}
+
+.analise-summary-panel-strong {
+  border-color: rgba(255, 183, 3, 0.18);
+  background: rgba(255, 183, 3, 0.055);
+}
+
+.analise-summary-panel h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.analise-summary-list {
+  display: grid;
+  gap: 10px;
+}
+
+.analise-summary-list div {
+  padding: 12px 14px;
+  border: 1px solid rgba(241, 245, 249, 0.08);
+  border-radius: var(--radius-md);
+  color: #b9c8d8;
+  background: rgba(255, 255, 255, 0.035);
+  line-height: 1.58;
+}
+
+.analise-summary-panel-strong .analise-summary-list div:last-child {
+  border-color: rgba(44, 242, 255, 0.18);
+  color: #d7eef2;
+  background: rgba(44, 242, 255, 0.065);
 }
 
 .ec-hero,
@@ -1448,9 +1559,12 @@ button.secondary-btn:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .analise-chart-header {
+    flex-direction: column;
+  }
+
   .analise-chart-card .ec-chart-actions {
     justify-content: flex-start;
-    margin: 12px 0 20px;
   }
 }
 
@@ -1478,7 +1592,16 @@ button.secondary-btn:hover {
   }
 
   .analise-chart-card .ec-chart-container {
-    min-height: 380px;
+    min-height: 440px;
+  }
+
+  .analise-chart-frame {
+    min-width: 740px;
+    height: 390px;
+  }
+
+  .analise-summary-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1502,8 +1625,21 @@ button.secondary-btn:hover {
   }
 
   .analise-chart-card .ec-chart-container {
-    min-height: 330px;
+    min-height: 390px;
     padding: 12px;
+  }
+
+  .analise-chart-frame {
+    min-width: 680px;
+    height: 350px;
+  }
+
+  .analise-chart-header {
+    gap: 14px;
+  }
+
+  .analise-summary-panel {
+    padding: 18px;
   }
 }
 

@@ -165,8 +165,12 @@ const Analise = () => {
                     backgroundColor: produto.cor + '33',
                     yAxisID: 'preco',
                     tension: 0.35,
+                    borderWidth: 3,
                     pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: produto.cor,
+                    pointBorderColor: '#0a0d14',
+                    pointBorderWidth: 2
                 });
             });
         }
@@ -180,6 +184,10 @@ const Analise = () => {
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
+                borderWidth: 3,
+                pointBackgroundColor: '#e74c3c',
+                pointBorderColor: '#0a0d14',
+                pointBorderWidth: 2,
                 borderDash: [6, 4]
             });
         }
@@ -193,6 +201,10 @@ const Analise = () => {
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
+                borderWidth: 3,
+                pointBackgroundColor: '#1abc9c',
+                pointBorderColor: '#0a0d14',
+                pointBorderWidth: 2,
                 borderDash: [4, 4]
             });
         }
@@ -209,11 +221,33 @@ const Analise = () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top', labels: { usePointStyle: true, padding: 14 } },
-                    title: { display: true, text: 'Comparativo de Preços, Selic e Inflação', font: { size: 16, weight: 'bold' } },
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: '#c3d0df',
+                            usePointStyle: true,
+                            padding: 18,
+                            boxWidth: 10,
+                            boxHeight: 10,
+                            font: { size: 13, weight: '600' }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Comparativo de Preços, Selic e Inflação',
+                        color: '#f1f5f9',
+                        padding: { bottom: 18 },
+                        font: { size: 18, weight: 'bold' }
+                    },
                     tooltip: {
                         mode: 'index',
                         intersect: false,
+                        backgroundColor: 'rgba(10, 13, 20, 0.96)',
+                        borderColor: 'rgba(44, 242, 255, 0.24)',
+                        borderWidth: 1,
+                        titleColor: '#f1f5f9',
+                        bodyColor: '#c3d0df',
+                        padding: 12,
                         callbacks: {
                             label: ctx => {
                                 const val = ctx.parsed.y;
@@ -233,19 +267,27 @@ const Analise = () => {
                     }
                 },
                 scales: {
-                    x: { display: true, title: { display: true, text: 'Período' } },
+                    x: {
+                        display: true,
+                        title: { display: true, text: 'Período', color: '#9aa8b7', font: { weight: '700' } },
+                        ticks: { color: '#9aa8b7', maxRotation: 0, autoSkipPadding: 18 },
+                        grid: { color: 'rgba(241,245,249,0.07)', drawBorder: false }
+                    },
                     preco: {
                         type: 'linear',
                         display: chkPrecos,
                         position: 'left',
-                        title: { display: true, text: 'Preço (R$)' }
+                        title: { display: true, text: 'Preço (R$)', color: '#9aa8b7', font: { weight: '700' } },
+                        ticks: { color: '#9aa8b7' },
+                        grid: { color: 'rgba(241,245,249,0.08)', drawBorder: false }
                     },
                     taxa: {
                         type: 'linear',
                         display: chkSelic || chkInflacao,
                         position: 'right',
-                        title: { display: true, text: 'Taxa (%)' },
-                        grid: { drawOnChartArea: false }
+                        title: { display: true, text: 'Taxa (%)', color: '#9aa8b7', font: { weight: '700' } },
+                        ticks: { color: '#9aa8b7' },
+                        grid: { drawOnChartArea: false, drawBorder: false }
                     }
                 },
                 interaction: { mode: 'index', intersect: false }
@@ -364,6 +406,14 @@ const Analise = () => {
             atualizacao: dataAtualizacao
         }
     ];
+    const linhasAnalise = analiseText ? analiseText.split('\n') : [];
+    const linhasDadosAnalise = linhasAnalise.filter(linha =>
+        linha.startsWith('Periodo')
+        || linha.startsWith('Taxa Selic')
+        || linha.startsWith('Inflacao')
+        || linha.startsWith('Produtos monitorados')
+    );
+    const linhasInterpretacaoAnalise = linhasAnalise.filter(linha => !linhasDadosAnalise.includes(linha));
 
     return (
         <main className="ec-container analise-page">
@@ -569,14 +619,24 @@ const Analise = () => {
             </div>
 
             <div className="ec-card analise-chart-card">
-                <h2>Gráfico Interativo</h2>
-                <div className="ec-chart-actions">
-                    <button className="ec-btn ec-btn-sec" onClick={exportarPNG}>Exportar PNG</button>
-                    <button className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir relatório</button>
+                <div className="analise-chart-header">
+                    <div>
+                        <h2>Gráfico Interativo</h2>
+                        <p>Compare a evolução dos preços selecionados com Selic e IPCA no período escolhido.</p>
+                    </div>
+                    <div className="ec-chart-actions">
+                        <button className="ec-btn ec-btn-sec" onClick={exportarPNG}>Exportar PNG</button>
+                        <button className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir relatório</button>
+                    </div>
                 </div>
-                <div className="ec-chart-container">
-                    <canvas ref={canvasRef}></canvas>
+                <div className="ec-chart-container analise-chart-scroll">
+                    <div className="analise-chart-frame">
+                        <canvas ref={canvasRef}></canvas>
+                    </div>
                 </div>
+                <p className="analise-chart-note">
+                    Use a legenda para identificar cada série. Preços usam o eixo da esquerda; Selic e IPCA usam o eixo da direita.
+                </p>
             </div>
 
             <div className="ec-card analise-compare-card">
@@ -600,15 +660,15 @@ const Analise = () => {
 
                 {comparacaoInfo && (
                     <>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 12, marginTop: 20 }}>
-                            <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
+                        <div className="analise-comparison-metrics" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 12, marginTop: 20 }}>
+                            <div className="ec-indicador-card analise-comparison-stat" style={{ padding: '18px 20px' }}>
                                 <div className="ec-indicador-label">Correlação (r)</div>
                                 <div className="ec-indicador-valor" style={{ fontSize: '1.6rem', color: comparacaoInfo.corr > 0.3 ? 'var(--c-success)' : comparacaoInfo.corr < -0.3 ? 'var(--c-danger)' : 'var(--c4)' }}>
                                     {comparacaoInfo.corr.toFixed(2)}
                                 </div>
                                 <div className="ec-indicador-sub">{comparacaoInfo.sentido}</div>
                             </div>
-                            <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
+                            <div className="ec-indicador-card analise-comparison-stat" style={{ padding: '18px 20px' }}>
                                 <div className="ec-indicador-label">{comparacaoInfo.pA.nome}</div>
                                 <div className="ec-indicador-valor" style={{ fontSize: '1.5rem' }}>
                                     R$ {comparacaoInfo.fimA.toFixed(2)}
@@ -617,7 +677,7 @@ const Analise = () => {
                                     {comparacaoInfo.varA >= 0 ? '+' : ''}{comparacaoInfo.varA.toFixed(1)}% no período
                                 </div>
                             </div>
-                            <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
+                            <div className="ec-indicador-card analise-comparison-stat" style={{ padding: '18px 20px' }}>
                                 <div className="ec-indicador-label">{comparacaoInfo.pB.nome}</div>
                                 <div className="ec-indicador-valor" style={{ fontSize: '1.5rem' }}>
                                     R$ {comparacaoInfo.fimB.toFixed(2)}
@@ -628,8 +688,8 @@ const Analise = () => {
                             </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginTop: 12 }}>
-                            <div className="ec-indicador-card" style={{ padding: '16px 20px' }}>
+                        <div className="analise-comparison-detail-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginTop: 12 }}>
+                            <div className="ec-indicador-card analise-range-panel" style={{ padding: '16px 20px' }}>
                                 <div className="ec-indicador-label" style={{ marginBottom: 12 }}>Amplitude de preço</div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                                     {[
@@ -655,7 +715,7 @@ const Analise = () => {
                                 </div>
                             </div>
 
-                            <div className="ec-indicador-card" style={{ padding: '16px 20px' }}>
+                            <div className="ec-indicador-card analise-range-panel" style={{ padding: '16px 20px' }}>
                                 <div className="ec-indicador-label" style={{ marginBottom: 12 }}>Evolução mês a mês</div>
                                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 60 }}>
                                     {comparacaoInfo.serieA.map((vA, i) => {
@@ -685,7 +745,7 @@ const Analise = () => {
                             </div>
                         </div>
 
-                        <div className="ec-insights" style={{ marginTop: 12 }}>
+                        <div className="ec-insights analise-comparison-insight" style={{ marginTop: 12 }}>
                             {comparacaoInfo.interpretacao}
                         </div>
                     </>
@@ -693,14 +753,28 @@ const Analise = () => {
             </div>
 
             <div className="ec-card analise-auto-card">
-                <h2>Análise Automática</h2>
-                <div className="ec-insights">
-                    {analiseText
-                        ? analiseText.split('\n').map((linha, i) => (
-                            <div key={i} style={{ marginBottom: i < analiseText.split('\n').length - 1 ? 8 : 0 }}>{linha}</div>
-                        ))
-                        : <div style={{ color: 'var(--c3)' }}>Selecione ao menos um produto para gerar a análise.</div>
-                    }
+                <h2>Resumo do cenário</h2>
+                <p>Leitura automática organizada entre dados observados e interpretação econômica.</p>
+                <div className="analise-summary-grid">
+                    <section className="analise-summary-panel">
+                        <h3>Dados observados</h3>
+                        <div className="analise-summary-list">
+                            {linhasDadosAnalise.length
+                                ? linhasDadosAnalise.map((linha, i) => <div key={i}>{linha}</div>)
+                                : <div style={{ color: 'var(--c3)' }}>Selecione ao menos um produto para gerar a análise.</div>
+                            }
+                        </div>
+                    </section>
+
+                    <section className="analise-summary-panel analise-summary-panel-strong">
+                        <h3>Interpretação</h3>
+                        <div className="analise-summary-list">
+                            {linhasInterpretacaoAnalise.length
+                                ? linhasInterpretacaoAnalise.map((linha, i) => <div key={i}>{linha}</div>)
+                                : <div style={{ color: 'var(--c3)' }}>Aguardando dados suficientes para destacar conclusões.</div>
+                            }
+                        </div>
+                    </section>
                 </div>
             </div>
         </main>
