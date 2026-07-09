@@ -28,7 +28,10 @@ Assim o frontend usa `/api` no mesmo dominio em producao, sem depender de URL fi
 4. Confirme o arquivo `render.yaml`.
 5. Clique em `Deploy Blueprint`.
 
-O Render vai criar o banco, instalar dependencias, gerar o Prisma Client, montar as tabelas com `prisma db push`, compilar o React e iniciar o servidor.
+O Render vai criar o banco, instalar dependencias, gerar o Prisma Client,
+compilar o React e iniciar o servidor. No plano gratis, o `prisma db push`
+roda no comando de start, porque o Render nao aceita `preDeployCommand` em Web
+Service gratis.
 
 Na primeira publicacao, aguarde ate o deploy terminar e abra a URL `onrender.com`
 do servico `economia-site`.
