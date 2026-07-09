@@ -11,9 +11,10 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
         { to: '/inicio', label: 'Início' },
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
+        { to: '/simulador', label: 'Simulador' },
         { to: '/analise#graficos', label: 'Gráficos' },
-        { to: '/educacao', label: 'Educação Econômica' },
-        { to: '/sobre', label: 'Sobre' },
+        { to: '/educacao', label: 'Educação' },
+        { to: '/sobre', label: 'Projeto' },
     ];
 
     useEffect(() => {
@@ -45,11 +46,11 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
             <div className="ec-header-inner">
                 <Link to={user ? '/inicio' : '/'} className="ec-brand" aria-label="Economic, ir para o início">
                     <div className="ec-brand-icon">
-                        <span aria-hidden="true" style={{ fontSize: '1.1rem' }}>&#128200;</span>
+                        <span aria-hidden="true">Ec</span>
                     </div>
                     <div className="ec-brand-text">
                         <strong>Economic</strong>
-                        <span>Análise macroeconômica</span>
+                        <span>Indicadores e análise</span>
                     </div>
                 </Link>
 
@@ -73,7 +74,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
                         <>
                             <div className="ec-user-chip">
                                 <div className="ec-user-avatar" aria-hidden="true">{initials}</div>
-                                <span>{user.nome.split(' ')[0]}</span>
+                                <span>{user.demo ? 'Demo' : user.nome.split(' ')[0]}</span>
                             </div>
                             <button type="button" className="ec-btn-header" onClick={onLogout}>Sair</button>
                         </>

@@ -100,7 +100,7 @@ const conceitos = [
         example: 'Quando a economia produz mais, pode haver mais emprego e renda.',
         site: 'Está no roadmap de indicadores para contextualizar atividade econômica.',
         why: 'Ajuda a separar inflação, renda e crescimento real.',
-        mistake: 'Achar que PIB maior resolve automaticamente todos os problemas.',
+        mistake: 'Achar que PIB maior resolve todos os problemas sem olhar distribuicao de renda.',
         question: 'PIB mostra produção econômica ou preço de um único produto?'
     },
     {
@@ -176,7 +176,7 @@ const Educacao = () => {
 
             <section id="glossario" className="site-section site-shell">
                 <SectionHeader
-                    eyebrow="Glossário inteligente"
+                    eyebrow="Glossário prático"
                     title="Busque por categoria, conceito ou exemplo."
                     description="O objetivo é explicar economia sem simplificar demais: definição, uso no site, erro comum e pergunta de fixação."
                 />

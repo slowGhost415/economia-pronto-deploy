@@ -9,7 +9,7 @@ services:
     name: economia-site
     runtime: node
     buildCommand: npm run render:build
-    startCommand: npm run db:push && npm run render:start
+    startCommand: npm run render:start
     healthCheckPath: /api/health
     plan: free
     envVars:

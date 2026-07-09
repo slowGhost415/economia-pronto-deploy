@@ -44,33 +44,35 @@ const Inicio = ({ user }) => {
     const [focoAtivo, setFocoAtivo] = useState('consumo');
 
     useEffect(() => {
-        document.title = 'Economic | Economia visual, indicadores e educação financeira';
+        document.title = 'Economic | Dashboard economico full stack';
         let description = document.querySelector('meta[name="description"]');
         if (!description) {
             description = document.createElement('meta');
             description.setAttribute('name', 'description');
             document.head.appendChild(description);
         }
-        description.setAttribute('content', 'Economic organiza Selic, IPCA, preços, simulações e educação econômica em uma experiência visual para entender economia sem confusão.');
+        description.setAttribute('content', 'Economic e um dashboard full stack com React, Node, Prisma, PostgreSQL, indicadores economicos, graficos, filtros, simulacoes e modo demonstracao.');
         const d = carregarDadosStorage();
         setDados(d);
         Promise.all([
             buscarIndicadoresBCB(),
             atualizarSelicAPI(d),
-            getSystemDashboard().catch(() => ({ interactions: [] }))
+            user?.demo ? Promise.resolve({ interactions: [] }) : getSystemDashboard().catch(() => ({ interactions: [] }))
         ]).then(([ind, dadosAtualizado, dashRes]) => {
             setIndicadores(ind);
             setDados({ ...dadosAtualizado });
             setHistorico((dashRes.interactions || []).slice(0, 4));
         }).finally(() => setCarregando(false));
-    }, []);
+    }, [user?.demo]);
 
     const registrarAcao = async (tipo_acao, descricao, destino) => {
-        try {
-            await performSystemAction({ tipo_acao, descricao });
-            const res = await getSystemDashboard();
-            setHistorico((res.interactions || []).slice(0, 4));
-        } catch { /* registro secundário */ }
+        if (!user?.demo) {
+            try {
+                await performSystemAction({ tipo_acao, descricao });
+                const res = await getSystemDashboard();
+                setHistorico((res.interactions || []).slice(0, 4));
+            } catch { /* registro secundário */ }
+        }
         navigate(destino);
     };
 
@@ -105,8 +107,8 @@ const Inicio = ({ user }) => {
     const features = [
         {
             marker: '01',
-            title: 'Análise avançada',
-            description: 'Compare preços, Selic e IPCA com leitura automática de tendência, correlação e impacto.',
+            title: 'Análise de cenário',
+            description: 'Compare preços, Selic e IPCA com tendência, correlação, impacto no consumo e exportação do gráfico.',
             action: 'Abrir análises',
             onClick: () => registrarAcao('analise', 'Acessou análise econômica', '/analise')
         },
@@ -188,11 +190,11 @@ const Inicio = ({ user }) => {
         <main className="site-page home-page">
             <section className="home-hero site-shell">
                 <div className="home-hero-copy">
-                    <Badge tone="cyan">Análise econômica visual</Badge>
-                    <h1>Entenda preços, juros e inflação sem se perder em números.</h1>
+                    <Badge tone="cyan">Dashboard econômico full stack</Badge>
+                    <h1>Indicadores, preços e simulações em uma plataforma navegável.</h1>
                     <p>
-                        Compare Selic, IPCA, produtos essenciais e simulações financeiras em
-                        uma experiência visual, clara e interativa.
+                        Projeto com React, Node, Prisma, PostgreSQL, autenticação JWT, gráficos,
+                        filtros e modo visitante para avaliação rápida pelo currículo.
                     </p>
                     <div className="hero-actions">
                         <button type="button" className="ec-btn" onClick={() => registrarAcao('analise', 'Começou análise pela Home', '/analise')}>
@@ -217,21 +219,29 @@ const Inicio = ({ user }) => {
                     </div>
                 </div>
 
-                <aside className="home-visual-panel" aria-label="Painel visual de pressão econômica">
+                <aside className="home-visual-panel" aria-label="Painel de sinais econômicos">
                     <div className="visual-panel-glass">
-                        <EconomicOrb />
-                        <div className="visual-panel-overlay">
-                            <span>Pressão econômica</span>
-                            <strong>Juros, preços e consumo em uma leitura só</strong>
+                        <div className="visual-panel-head">
+                            <span>Visão do sistema</span>
+                            <strong>Dados, contexto e decisão</strong>
                         </div>
-                    </div>
-                    <div className="floating-dashboard-card">
-                        <span>Selic x IPCA</span>
-                        <MiniTrend values={selicHist} />
-                    </div>
-                    <div className="floating-dashboard-card bottom">
-                        <span>Poder de compra</span>
-                        <MiniTrend values={ipcaHist} tone="amber" />
+                        <div className="orb-stage">
+                            <EconomicOrb />
+                        </div>
+                        <div className="visual-panel-overlay">
+                            <span>Arquitetura aplicada</span>
+                            <strong>Frontend responsivo, API Express e banco relacional</strong>
+                        </div>
+                        <div className="market-signal-grid">
+                            <div className="floating-dashboard-card">
+                                <span>Selic x IPCA</span>
+                                <MiniTrend values={selicHist} />
+                            </div>
+                            <div className="floating-dashboard-card bottom">
+                                <span>Poder de compra</span>
+                                <MiniTrend values={ipcaHist} tone="amber" />
+                            </div>
+                        </div>
                     </div>
                 </aside>
             </section>
@@ -293,8 +303,8 @@ const Inicio = ({ user }) => {
             <section className="site-section site-shell">
                 <SectionHeader
                     eyebrow="O que o Economic faz"
-                    title="Dados econômicos organizados para leitura, comparação e decisão."
-                    description="Cada módulo tem uma função clara: observar indicadores, comparar séries, aprender conceitos e transformar números em contexto."
+                    title="Módulos claros, dados rastreáveis e interações úteis."
+                    description="Cada área resolve uma parte do fluxo: observar indicadores, comparar séries, simular decisões, aprender conceitos e consultar as fontes."
                 />
                 <div className="feature-grid">
                     {features.map((feature) => <FeatureCard key={feature.title} {...feature} />)}
@@ -327,8 +337,8 @@ const Inicio = ({ user }) => {
             <section className="site-section site-shell">
                 <SectionHeader
                     eyebrow="Painel demonstrativo"
-                    title="Um preview do dashboard, sem cara de planilha."
-                    description="A visão combina indicadores, tendência e interpretação para dar contexto antes de entrar na análise completa."
+                    title="Um preview do dashboard com sinais de mercado."
+                    description="A visão combina indicadores, tendência e interpretação para mostrar contexto antes da análise completa."
                 >
                     <Link className="ec-btn ec-btn-outline" to="/analise#graficos">Ver gráficos</Link>
                 </SectionHeader>

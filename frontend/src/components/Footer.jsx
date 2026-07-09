@@ -4,18 +4,19 @@ const Footer = () => {
     const year = new Date().getFullYear();
 
     const links = [
+        { to: '/demo', label: 'Abrir demo' },
         { to: '/inicio', label: 'Início' },
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
-        { to: '/analise#graficos', label: 'Gráficos' },
-        { to: '/educacao', label: 'Educação Econômica' },
-        { to: '/sobre', label: 'Sobre' },
+        { to: '/simulador', label: 'Simulador' },
+        { to: '/sobre', label: 'Projeto' },
     ];
 
     const fontes = [
         'Banco Central do Brasil / SGS',
         'Base local de preços',
-        'Fontes oficiais previstas para próximas integrações'
+        'PostgreSQL + Prisma para dados de usuário',
+        'Fontes oficiais planejadas no roadmap'
     ];
 
     return (
@@ -23,13 +24,13 @@ const Footer = () => {
             <div className="ec-footer-inner">
                 <section className="ec-footer-brand" aria-labelledby="footer-brand-title">
                     <div className="ec-brand-icon ec-footer-icon">
-                        <span aria-hidden="true">&#128200;</span>
+                        <span aria-hidden="true">Ec</span>
                     </div>
                     <div>
                         <h2 id="footer-brand-title">Economic</h2>
                         <p>
-                            Plataforma de análise econômica para acompanhar Selic, inflação,
-                            preços, indicadores e leitura de cenário com linguagem clara.
+                            Projeto full stack de análise econômica com frontend React, backend Express,
+                            autenticação JWT, Prisma, PostgreSQL, gráficos e modo demonstração.
                         </p>
                     </div>
                 </section>
@@ -42,15 +43,15 @@ const Footer = () => {
                 </nav>
 
                 <section className="ec-footer-sources" aria-labelledby="footer-sources-title">
-                    <h3 id="footer-sources-title">Fontes e transparência</h3>
+                    <h3 id="footer-sources-title">Fontes e stack</h3>
                     {fontes.map((fonte) => (
                         <span key={fonte}>{fonte}</span>
                     ))}
                 </section>
 
                 <section className="ec-footer-contact" aria-labelledby="footer-contact-title">
-                    <h3 id="footer-contact-title">Créditos</h3>
-                    <p>Projeto Economic, desenvolvido para estudo, análise e educação financeira.</p>
+                    <h3 id="footer-contact-title">Uso do projeto</h3>
+                    <p>Desenvolvido como plataforma de estudo, portfolio e demonstracao tecnica.</p>
                     <p className="ec-footer-note">
                         Dados e interpretações têm caráter informativo e não constituem recomendação
                         financeira, fiscal ou de investimento.
@@ -59,8 +60,8 @@ const Footer = () => {
             </div>
 
             <div className="ec-footer-bottom">
-                <span>© {year} Economic. Todos os direitos reservados.</span>
-                <span>Última revisão visual: plataforma econômica moderna e responsiva.</span>
+                <span>© {year} Economic. Projeto de portfólio.</span>
+                <span>React + Node + Prisma + PostgreSQL + Chart.js.</span>
             </div>
         </footer>
     );

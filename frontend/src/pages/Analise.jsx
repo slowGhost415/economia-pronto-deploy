@@ -26,6 +26,37 @@ import {
 
 Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Legend, Title, Tooltip, Filler, zoomPlugin);
 
+const periodHighlightPlugin = {
+    id: 'periodHighlight',
+    beforeDatasetsDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        if (!chartArea || !scales?.x || !chart.data.labels?.length) return;
+        const labels = chart.data.labels;
+        const startIndex = Math.max(0, labels.length - 3);
+        const startX = scales.x.getPixelForValue(startIndex);
+        const endX = chartArea.right;
+        ctx.save();
+        ctx.fillStyle = 'rgba(110, 168, 254, 0.055)';
+        ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.bottom - chartArea.top);
+        ctx.strokeStyle = 'rgba(110, 168, 254, 0.18)';
+        ctx.setLineDash([4, 6]);
+        ctx.beginPath();
+        ctx.moveTo(startX, chartArea.top);
+        ctx.lineTo(startX, chartArea.bottom);
+        ctx.stroke();
+        ctx.restore();
+    },
+    afterDraw(chart) {
+        const { ctx, chartArea } = chart;
+        if (!chartArea) return;
+        ctx.save();
+        ctx.fillStyle = '#91a3ba';
+        ctx.font = '600 11px Manrope, sans-serif';
+        ctx.fillText('recorte recente', chartArea.right - 92, chartArea.top + 16);
+        ctx.restore();
+    }
+};
+
 const Analise = () => {
     const canvasRef = useRef(null);
     const chartRef = useRef(null);
@@ -183,7 +214,7 @@ const Analise = () => {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     pointBackgroundColor: produto.cor,
-                    pointBorderColor: '#0a0d14',
+                    pointBorderColor: '#08111f',
                     pointBorderWidth: 2
                 });
             });
@@ -193,14 +224,14 @@ const Analise = () => {
             datasets.push({
                 label: 'Selic (%)',
                 data: d.selic.slice(range.start, range.end),
-                borderColor: '#e74c3c',
-                backgroundColor: 'rgba(231,76,60,0.15)',
+                borderColor: '#6ea8fe',
+                backgroundColor: 'rgba(110,168,254,0.14)',
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
                 borderWidth: 3,
-                pointBackgroundColor: '#e74c3c',
-                pointBorderColor: '#0a0d14',
+                pointBackgroundColor: '#6ea8fe',
+                pointBorderColor: '#08111f',
                 pointBorderWidth: 2,
                 borderDash: [6, 4]
             });
@@ -210,14 +241,14 @@ const Analise = () => {
             datasets.push({
                 label: 'Inflação (IPCA)',
                 data: d.inflacao.slice(range.start, range.end),
-                borderColor: '#1abc9c',
-                backgroundColor: 'rgba(26,188,156,0.15)',
+                borderColor: '#f3b23c',
+                backgroundColor: 'rgba(243,178,60,0.14)',
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
                 borderWidth: 3,
-                pointBackgroundColor: '#1abc9c',
-                pointBorderColor: '#0a0d14',
+                pointBackgroundColor: '#f3b23c',
+                pointBorderColor: '#08111f',
                 pointBorderWidth: 2,
                 borderDash: [4, 4]
             });
@@ -238,7 +269,7 @@ const Analise = () => {
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#c3d0df',
+                            color: '#d7e2ee',
                             usePointStyle: true,
                             padding: 18,
                             boxWidth: 10,
@@ -248,19 +279,19 @@ const Analise = () => {
                     },
                     title: {
                         display: true,
-                        text: 'Comparativo de Preços, Selic e Inflação',
-                        color: '#f1f5f9',
+                        text: 'Preços, Selic e IPCA no período selecionado',
+                        color: '#edf3f8',
                         padding: { bottom: 18 },
                         font: { size: 18, weight: 'bold' }
                     },
                     tooltip: {
                         mode: 'index',
                         intersect: false,
-                        backgroundColor: 'rgba(10, 13, 20, 0.96)',
-                        borderColor: 'rgba(44, 242, 255, 0.24)',
+                        backgroundColor: 'rgba(8, 17, 31, 0.97)',
+                        borderColor: 'rgba(110, 168, 254, 0.28)',
                         borderWidth: 1,
-                        titleColor: '#f1f5f9',
-                        bodyColor: '#c3d0df',
+                        titleColor: '#edf3f8',
+                        bodyColor: '#d7e2ee',
                         padding: 12,
                         callbacks: {
                             label: ctx => {
@@ -283,29 +314,30 @@ const Analise = () => {
                 scales: {
                     x: {
                         display: true,
-                        title: { display: true, text: 'Período', color: '#9aa8b7', font: { weight: '700' } },
-                        ticks: { color: '#9aa8b7', maxRotation: 0, autoSkipPadding: 18 },
-                        grid: { color: 'rgba(241,245,249,0.07)', drawBorder: false }
+                        title: { display: true, text: 'Período', color: '#a2b0c2', font: { weight: '700' } },
+                        ticks: { color: '#a2b0c2', maxRotation: 0, autoSkipPadding: 18 },
+                        grid: { color: 'rgba(211,220,232,0.07)', drawBorder: false }
                     },
                     preco: {
                         type: 'linear',
                         display: chkPrecos,
                         position: 'left',
-                        title: { display: true, text: 'Preço (R$)', color: '#9aa8b7', font: { weight: '700' } },
-                        ticks: { color: '#9aa8b7' },
-                        grid: { color: 'rgba(241,245,249,0.08)', drawBorder: false }
+                        title: { display: true, text: 'Preço (R$)', color: '#a2b0c2', font: { weight: '700' } },
+                        ticks: { color: '#a2b0c2' },
+                        grid: { color: 'rgba(211,220,232,0.08)', drawBorder: false }
                     },
                     taxa: {
                         type: 'linear',
                         display: chkSelic || chkInflacao,
                         position: 'right',
-                        title: { display: true, text: 'Taxa (%)', color: '#9aa8b7', font: { weight: '700' } },
-                        ticks: { color: '#9aa8b7' },
+                        title: { display: true, text: 'Taxa (%)', color: '#a2b0c2', font: { weight: '700' } },
+                        ticks: { color: '#a2b0c2' },
                         grid: { drawOnChartArea: false, drawBorder: false }
                     }
                 },
                 interaction: { mode: 'index', intersect: false }
-            }
+            },
+            plugins: [periodHighlightPlugin]
         });
     }, [dados, selecao, chkPrecos, chkSelic, chkInflacao, periodo, getPeriodoRange]);
 
@@ -356,6 +388,10 @@ const Analise = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const resetarZoom = () => {
+        if (chartRef.current?.resetZoom) chartRef.current.resetZoom();
     };
 
     const produtos = obterProdutos();
@@ -666,6 +702,23 @@ const Analise = () => {
         || linha.startsWith('Produtos monitorados')
     );
     const linhasInterpretacaoAnalise = linhasAnalise.filter(linha => !linhasDadosAnalise.includes(linha));
+    const chartReadingCards = [
+        {
+            label: 'Periodo exibido',
+            value: `${periodoInicio} - ${periodoFim}`,
+            text: periodo === 'all' ? 'Todo o historico disponivel' : `Ultimos ${periodo} meses`
+        },
+        {
+            label: 'Series no grafico',
+            value: `${seriesAtivas.length}`,
+            text: seriesAtivas.length ? seriesAtivas.join(', ') : 'Nenhuma serie ativa'
+        },
+        {
+            label: 'Produto em destaque',
+            value: produtoMaiorMovimento?.nome || 'Aguardando selecao',
+            text: produtoMaiorMovimento ? `${produtoMaiorMovimento.variacao >= 0 ? '+' : ''}${produtoMaiorMovimento.variacao.toFixed(1)}% no periodo` : 'Selecione produtos para comparar'
+        }
+    ];
 
     return (
         <main id="conteudo-principal" className="ec-container analise-page">
@@ -674,7 +727,7 @@ const Analise = () => {
                     <span className="eyebrow">Painel de leitura econômica</span>
                     <h1>Resumo do cenário econômico.</h1>
                     <p>
-                        Leitura automática entre dados observados, tendências, pontos de atenção
+                        Leitura técnica entre dados observados, tendências, pontos de atenção
                         e impacto no consumo.
                     </p>
                 </div>
@@ -809,9 +862,9 @@ const Analise = () => {
             </section>
 
             <div className="ec-card analise-config-card">
-                <h2>Configuração da Análise</h2>
+                <h2>Montagem da análise</h2>
 
-                <p>Escolha quais variáveis devem ser exibidas no gráfico e quais produtos você quer comparar.</p>
+                <p>Defina quais variáveis entram no gráfico e quais produtos serão comparados.</p>
                 <div className="ec-flex">
                     <div className="ec-flex-item">
                         <h3>Variáveis</h3>
@@ -838,7 +891,7 @@ const Analise = () => {
 
             <div className="ec-card analise-products-card">
                 <h2>Seleção de Produtos</h2>
-                <p>Pesquise qualquer produto pelo nome, categoria ou sinônimos. O sistema encontra automaticamente os dados disponíveis.</p>
+                <p>Pesquise por nome, categoria ou sinônimos e adicione os produtos disponíveis ao gráfico.</p>
 
                 <div style={{ position: 'relative', marginBottom: 20 }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -979,6 +1032,7 @@ const Analise = () => {
                         <p>Compare a evolução dos preços selecionados com Selic e IPCA no período escolhido.</p>
                     </div>
                     <div className="ec-chart-actions">
+                        <button type="button" className="ec-btn ec-btn-sec" onClick={resetarZoom}>Resetar zoom</button>
                         <button type="button" className="ec-btn ec-btn-sec" onClick={exportarPNG}>Exportar PNG</button>
                         <button type="button" className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir relatório</button>
                     </div>
@@ -995,8 +1049,17 @@ const Analise = () => {
                     </div>
                 </div>
                 <p className="analise-chart-note">
-                    Use a legenda para identificar cada série. Preços usam o eixo da esquerda; Selic e IPCA usam o eixo da direita.
+                    Use a legenda para identificar cada série. Preços usam o eixo da esquerda; Selic e IPCA usam o eixo da direita. A faixa azul destaca o recorte mais recente.
                 </p>
+                <div className="analise-chart-insights" aria-label="Resumo do grafico">
+                    {chartReadingCards.map((item) => (
+                        <article key={item.label}>
+                            <span>{item.label}</span>
+                            <strong>{item.value}</strong>
+                            <p>{item.text}</p>
+                        </article>
+                    ))}
+                </div>
             </div>
 
             <div className="ec-card analise-compare-card">
@@ -1114,7 +1177,7 @@ const Analise = () => {
 
             <div className="ec-card analise-auto-card">
                 <h2>Resumo do cenário</h2>
-                <p>Leitura automática organizada entre dados observados e interpretação econômica.</p>
+                <p>Resumo organizado entre dados observados e interpretação econômica.</p>
                 <div className="analise-summary-grid">
                     <section className="analise-summary-panel">
                         <h3>Dados observados</h3>

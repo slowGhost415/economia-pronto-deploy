@@ -42,7 +42,7 @@ const SmartTaxSearch = () => {
   const [query, setQuery] = useState('smartphone');
   const [manualPrice, setManualPrice] = useState('');
   const [freight, setFreight] = useState('120');
-  const [mode, setMode] = useState('automatico');
+  const [mode, setMode] = useState('guiado');
   const [customRates, setCustomRates] = useState({ ii: 16, ipi: 15, pis: 2.1, cofins: 9.65, icms: 18 });
 
   const preset = findPreset(query);
@@ -77,7 +77,7 @@ const SmartTaxSearch = () => {
   return (
     <section className="tax-lab">
       <div className="panel-heading">
-        <span className="eyebrow">Busca inteligente</span>
+        <span className="eyebrow">Busca guiada</span>
         <h2>Calcule o preco real de um bem com impostos</h2>
         <p>Digite um item, ajuste frete e aliquotas, e veja a composicao do custo estimado.</p>
       </div>
@@ -107,7 +107,7 @@ const SmartTaxSearch = () => {
           </div>
 
           <div className="segmented">
-            <button type="button" className={mode === 'automatico' ? 'active' : ''} onClick={() => setMode('automatico')}>Automatico</button>
+            <button type="button" className={mode === 'guiado' ? 'active' : ''} onClick={() => setMode('guiado')}>Guiado</button>
             <button type="button" className={mode === 'manual' ? 'active' : ''} onClick={() => setMode('manual')}>Manual</button>
           </div>
 
