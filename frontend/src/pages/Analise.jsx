@@ -313,6 +313,57 @@ const Analise = () => {
         .map(chave => dadosEconomicos.produtos[chave])
         .filter(Boolean);
     const produtosResumo = produtosSelecionados.slice(0, 3).map(prod => prod.nome).join(', ');
+    const seriesAtivas = [
+        chkPrecos && 'Preços',
+        chkSelic && 'Selic',
+        chkInflacao && 'IPCA'
+    ].filter(Boolean);
+    const formatarVariacaoPontos = (serie) => {
+        const recorte = serie.slice(rangeAtual.start, rangeAtual.end);
+        if (recorte.length < 2) return null;
+        const inicial = recorte[0];
+        const final = recorte[recorte.length - 1];
+        const delta = final - inicial;
+        if (!Number.isFinite(delta) || Math.abs(delta) < 0.005) {
+            return { direcao: 'neutra', texto: 'Estável no período' };
+        }
+        return {
+            direcao: delta > 0 ? 'alta' : 'queda',
+            texto: `${delta > 0 ? '+' : ''}${delta.toFixed(2)} p.p. no período`
+        };
+    };
+    const indicadoresAnalise = [
+        {
+            nome: 'Taxa Selic',
+            valor: `${selicAtual?.toFixed(2)}%`,
+            variacao: formatarVariacaoPontos(dadosEconomicos.selic),
+            descricao: 'Referência da última leitura disponível para juros básicos.',
+            fonte: 'Fonte: BCB / SGS',
+            atualizacao: dataAtualizacao
+        },
+        {
+            nome: 'Inflação IPCA',
+            valor: `${inflacaoAtual?.toFixed(2)}%`,
+            variacao: formatarVariacaoPontos(dadosEconomicos.inflacao),
+            descricao: 'Inflação mensal monitorada na série carregada.',
+            fonte: 'Fonte: BCB / SGS',
+            atualizacao: dataAtualizacao
+        },
+        {
+            nome: 'Produtos em análise',
+            valor: produtosSelecionados.length,
+            descricao: produtosResumo || 'Nenhum produto selecionado',
+            fonte: 'Fonte: base local de preços',
+            atualizacao: dataAtualizacao
+        },
+        {
+            nome: 'Séries ativas',
+            valor: `${seriesAtivas.length}/3`,
+            descricao: seriesAtivas.length ? seriesAtivas.join(', ') : 'Nenhuma série ativa',
+            fonte: 'Fonte: seleção atual do usuário',
+            atualizacao: dataAtualizacao
+        }
+    ];
 
     return (
         <main className="ec-container analise-page">
@@ -343,26 +394,30 @@ const Analise = () => {
             </section>
 
             <section className="analise-kpi-grid">
-                <div className="ec-indicador-card analise-kpi-card">
-                    <div className="ec-indicador-label">Selic atual</div>
-                    <div className="ec-indicador-valor">{selicAtual?.toFixed(2)}%</div>
-                    <div className="ec-indicador-sub">Referência da última leitura disponível</div>
-                </div>
-                <div className="ec-indicador-card analise-kpi-card">
-                    <div className="ec-indicador-label">IPCA atual</div>
-                    <div className="ec-indicador-valor">{inflacaoAtual?.toFixed(2)}%</div>
-                    <div className="ec-indicador-sub">Inflação mensal monitorada</div>
-                </div>
-                <div className="ec-indicador-card analise-kpi-card">
-                    <div className="ec-indicador-label">Produtos em análise</div>
-                    <div className="ec-indicador-valor">{produtosSelecionados.length}</div>
-                    <div className="ec-indicador-sub">{produtosResumo || 'Nenhum produto selecionado'}</div>
-                </div>
-                <div className="ec-indicador-card analise-kpi-card">
-                    <div className="ec-indicador-label">Última atualização</div>
-                    <div className="ec-indicador-valor analise-kpi-date">{dataAtualizacao || '-'}</div>
-                    <div className="ec-indicador-sub">Dados locais e indicadores BCB</div>
-                </div>
+                {indicadoresAnalise.map((indicador) => (
+                    <article key={indicador.nome} className="ec-indicador-card analise-kpi-card">
+                        <div className="analise-kpi-topline">
+                            <div className="ec-indicador-label">{indicador.nome}</div>
+                            {indicador.variacao && (
+                                <span className={`analise-trend-chip ${indicador.variacao.direcao}`}>
+                                    {indicador.variacao.direcao === 'alta' ? 'Alta' : indicador.variacao.direcao === 'queda' ? 'Queda' : 'Estável'}
+                                </span>
+                            )}
+                        </div>
+                        <div className="ec-indicador-valor">{indicador.valor}</div>
+                        {indicador.variacao && (
+                            <div className={`analise-kpi-variation ${indicador.variacao.direcao}`}>
+                                {indicador.variacao.direcao === 'alta' ? '▲' : indicador.variacao.direcao === 'queda' ? '▼' : '●'}
+                                <span>{indicador.variacao.texto}</span>
+                            </div>
+                        )}
+                        <div className="ec-indicador-sub">{indicador.descricao}</div>
+                        <div className="analise-kpi-meta">
+                            <span>{indicador.fonte}</span>
+                            {indicador.atualizacao && <span>Atualizado em {indicador.atualizacao}</span>}
+                        </div>
+                    </article>
+                ))}
             </section>
 
             <div className="ec-card analise-config-card">

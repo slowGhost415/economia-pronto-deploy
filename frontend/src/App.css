@@ -564,17 +564,30 @@ button.secondary-btn:hover {
 
 .analise-kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .analise-kpi-card {
-  min-height: 150px;
-  padding: 22px;
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  padding: 26px;
+  border-color: rgba(241, 245, 249, 0.14);
+  background:
+    linear-gradient(180deg, rgba(24, 31, 43, 0.96), rgba(10, 13, 20, 0.96));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+}
+
+.analise-kpi-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
 }
 
 .analise-kpi-card .ec-indicador-valor {
-  margin: 14px 0 8px;
+  margin: 18px 0 10px;
   font-size: clamp(2rem, 3.2vw, 2.75rem);
   line-height: 0.98;
   font-weight: 900;
@@ -587,9 +600,68 @@ button.secondary-btn:hover {
   line-height: 1.45;
 }
 
-.analise-kpi-date {
-  font-size: 1.12rem !important;
-  line-height: 1.35 !important;
+.analise-trend-chip,
+.analise-kpi-variation {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-weight: 900;
+}
+
+.analise-trend-chip {
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: #aebccd;
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+}
+
+.analise-trend-chip.alta,
+.analise-kpi-variation.alta {
+  color: var(--green);
+}
+
+.analise-trend-chip.queda,
+.analise-kpi-variation.queda {
+  color: var(--red);
+}
+
+.analise-trend-chip.neutra,
+.analise-kpi-variation.neutra {
+  color: #aebccd;
+}
+
+.analise-trend-chip.alta {
+  border-color: rgba(64, 216, 138, 0.3);
+  background: rgba(64, 216, 138, 0.1);
+}
+
+.analise-trend-chip.queda {
+  border-color: rgba(255, 93, 115, 0.3);
+  background: rgba(255, 93, 115, 0.1);
+}
+
+.analise-kpi-variation {
+  margin-bottom: 14px;
+  font-size: 0.96rem;
+}
+
+.analise-kpi-meta {
+  display: grid;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 18px;
+  color: #718195;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.analise-kpi-meta span:first-child {
+  color: #92a1b3;
+  font-weight: 800;
 }
 
 .analise-config-card {
