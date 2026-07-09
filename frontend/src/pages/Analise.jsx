@@ -374,11 +374,44 @@ const Analise = () => {
             texto: `${delta > 0 ? '+' : ''}${delta.toFixed(2)} p.p. no período`
         };
     };
+    const variacaoSelicPeriodo = formatarVariacaoPontos(dadosEconomicos.selic);
+    const variacaoInflacaoPeriodo = formatarVariacaoPontos(dadosEconomicos.inflacao);
+    const statusVariacao = (variacao) => {
+        if (!variacao) return 'Sem leitura';
+        if (variacao.direcao === 'alta') return 'Alta';
+        if (variacao.direcao === 'queda') return 'Queda';
+        return 'Estável';
+    };
+    const calcularVariacaoSeriePercentual = (serie) => {
+        const recorte = serie.slice(rangeAtual.start, rangeAtual.end);
+        if (recorte.length < 2) return 0;
+        const inicial = recorte[0];
+        const final = recorte[recorte.length - 1];
+        if (!inicial) return 0;
+        return calcularVariacaoPercentual(inicial, final);
+    };
+    const variacoesProdutosPeriodo = produtosSelecionados
+        .map(prod => ({
+            nome: prod.nome,
+            variacao: calcularVariacaoSeriePercentual(prod.dados)
+        }))
+        .sort((a, b) => Math.abs(b.variacao) - Math.abs(a.variacao));
+    const produtoMaiorMovimento = variacoesProdutosPeriodo[0];
+    const interpretacaoSelic = variacaoSelicPeriodo?.direcao === 'alta'
+        ? 'Juros mais altos tendem a encarecer crédito, financiamentos e parcelamentos.'
+        : variacaoSelicPeriodo?.direcao === 'queda'
+            ? 'Juros em queda podem aliviar o custo do crédito e estimular consumo e investimento.'
+            : 'Selic estável sugere uma política monetária sem mudança relevante no recorte escolhido.';
+    const interpretacaoInflacao = variacaoInflacaoPeriodo?.direcao === 'alta'
+        ? 'Inflação em alta pressiona o orçamento e reduz o poder de compra.'
+        : variacaoInflacaoPeriodo?.direcao === 'queda'
+            ? 'Inflação em queda melhora a previsibilidade dos preços e ajuda o consumo.'
+            : 'Inflação estável indica menor mudança no ritmo de preços no período.';
     const indicadoresAnalise = [
         {
             nome: 'Taxa Selic',
             valor: `${selicAtual?.toFixed(2)}%`,
-            variacao: formatarVariacaoPontos(dadosEconomicos.selic),
+            variacao: variacaoSelicPeriodo,
             descricao: 'Referência da última leitura disponível para juros básicos.',
             fonte: 'Fonte: BCB / SGS',
             atualizacao: dataAtualizacao
@@ -386,7 +419,7 @@ const Analise = () => {
         {
             nome: 'Inflação IPCA',
             valor: `${inflacaoAtual?.toFixed(2)}%`,
-            variacao: formatarVariacaoPontos(dadosEconomicos.inflacao),
+            variacao: variacaoInflacaoPeriodo,
             descricao: 'Inflação mensal monitorada na série carregada.',
             fonte: 'Fonte: BCB / SGS',
             atualizacao: dataAtualizacao
@@ -404,6 +437,209 @@ const Analise = () => {
             descricao: seriesAtivas.length ? seriesAtivas.join(', ') : 'Nenhuma série ativa',
             fonte: 'Fonte: seleção atual do usuário',
             atualizacao: dataAtualizacao
+        }
+    ];
+    const indicadoresEstruturais = [
+        {
+            nome: 'Selic',
+            valor: `${selicAtual?.toFixed(2)}%`,
+            status: 'Disponível',
+            variacao: statusVariacao(variacaoSelicPeriodo),
+            historico: `${periodoInicio} - ${periodoFim}`,
+            fonte: 'BCB / SGS',
+            atualizacao: dataAtualizacao || 'Aguardando atualização',
+            explicacao: 'Taxa básica de juros usada como referência para crédito, renda fixa e decisões do Banco Central.',
+            impacto: 'Afeta financiamentos, cartão, empréstimos, investimentos conservadores e custo das empresas.',
+            interpretacao: interpretacaoSelic,
+            disponivel: true
+        },
+        {
+            nome: 'IPCA',
+            valor: `${inflacaoAtual?.toFixed(2)}%`,
+            status: 'Disponível',
+            variacao: statusVariacao(variacaoInflacaoPeriodo),
+            historico: `${periodoInicio} - ${periodoFim}`,
+            fonte: 'BCB / SGS',
+            atualizacao: dataAtualizacao || 'Aguardando atualização',
+            explicacao: 'Indicador de inflação ao consumidor usado para acompanhar a variação geral de preços.',
+            impacto: 'Mostra quanto o dinheiro perde ou ganha poder de compra ao longo do tempo.',
+            interpretacao: interpretacaoInflacao,
+            disponivel: true
+        },
+        {
+            nome: 'Dólar',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Histórico futuro',
+            fonte: 'Previsto: BCB PTAX / SGS',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Câmbio usado como referência para produtos importados, combustíveis e insumos dolarizados.',
+            impacto: 'Pode afetar eletrônicos, trigo, combustíveis, viagens e custos de empresas.',
+            interpretacao: 'Quando a série for conectada, este card poderá comparar câmbio com preços e inflação.',
+            disponivel: false
+        },
+        {
+            nome: 'Euro',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Histórico futuro',
+            fonte: 'Previsto: fonte cambial oficial',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Moeda relevante para importações, viagens, contratos e comparação internacional.',
+            impacto: 'Ajuda a entender custos ligados à Europa e variações de produtos importados.',
+            interpretacao: 'Reservado para uma leitura futura de câmbio internacional.',
+            disponivel: false
+        },
+        {
+            nome: 'PIB',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Série futura',
+            fonte: 'Previsto: IBGE',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Mede a produção de bens e serviços da economia.',
+            impacto: 'Ajuda a avaliar crescimento, renda, emprego e atividade econômica.',
+            interpretacao: 'Quando conectado, deve contextualizar se o cenário é de expansão ou desaceleração.',
+            disponivel: false
+        },
+        {
+            nome: 'Desemprego',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Série futura',
+            fonte: 'Previsto: IBGE / PNAD',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Indica a parcela da força de trabalho que procura emprego e não encontra ocupação.',
+            impacto: 'Afeta renda das famílias, consumo, inadimplência e pressão social.',
+            interpretacao: 'Reservado para conectar mercado de trabalho ao consumo monitorado.',
+            disponivel: false
+        },
+        {
+            nome: 'Inflação acumulada',
+            valor: 'Aguardando cálculo',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'A definir',
+            fonte: 'Previsto: série IPCA validada',
+            atualizacao: 'Não calculado nesta etapa',
+            explicacao: 'Mostra o efeito composto da inflação em um intervalo, como 12 meses.',
+            impacto: 'Ajuda a traduzir a perda acumulada do poder de compra.',
+            interpretacao: 'O espaço está pronto para receber o cálculo quando a regra for definida.',
+            disponivel: false
+        },
+        {
+            nome: 'Mercado financeiro',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Indicadores futuros',
+            fonte: 'Previsto: fontes de mercado',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Pode reunir bolsa, juros futuros, renda fixa e expectativas de mercado.',
+            impacto: 'Ajuda a entender apetite a risco, custo de capital e expectativas econômicas.',
+            interpretacao: 'Reservado para uma visão de contexto financeiro sem misturar com dados já carregados.',
+            disponivel: false
+        },
+        {
+            nome: 'Balança comercial',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Série futura',
+            fonte: 'Previsto: MDIC / Comex Stat',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Compara exportações e importações do país.',
+            impacto: 'Ajuda a ler pressão cambial, setor externo e demanda por produtos brasileiros.',
+            interpretacao: 'Faz sentido em uma etapa posterior para complementar a leitura de câmbio.',
+            disponivel: false
+        },
+        {
+            nome: 'Dívida pública',
+            valor: 'Aguardando dado',
+            status: 'Estrutura preparada',
+            variacao: 'Pendente',
+            historico: 'Série futura',
+            fonte: 'Previsto: Tesouro Nacional',
+            atualizacao: 'Não conectado nesta página',
+            explicacao: 'Acompanha o endividamento do governo e seu custo ao longo do tempo.',
+            impacto: 'Pode influenciar juros, risco fiscal, impostos futuros e confiança de investidores.',
+            interpretacao: 'Reservado para dar contexto fiscal aos indicadores monetários.',
+            disponivel: false
+        }
+    ];
+    const pontosAtencao = [
+        {
+            titulo: 'Juros e crédito',
+            estado: statusVariacao(variacaoSelicPeriodo),
+            texto: interpretacaoSelic,
+            prioridade: variacaoSelicPeriodo?.direcao === 'alta' ? 'alta' : 'normal'
+        },
+        {
+            titulo: 'Inflação e poder de compra',
+            estado: statusVariacao(variacaoInflacaoPeriodo),
+            texto: interpretacaoInflacao,
+            prioridade: variacaoInflacaoPeriodo?.direcao === 'alta' ? 'alta' : 'normal'
+        },
+        {
+            titulo: 'Produtos monitorados',
+            estado: produtoMaiorMovimento ? `${produtoMaiorMovimento.variacao >= 0 ? '+' : ''}${produtoMaiorMovimento.variacao.toFixed(1)}%` : 'Sem seleção',
+            texto: produtoMaiorMovimento
+                ? `${produtoMaiorMovimento.nome} teve o maior movimento entre os produtos selecionados no período.`
+                : 'Selecione produtos para destacar pressões específicas de preço.',
+            prioridade: produtoMaiorMovimento && produtoMaiorMovimento.variacao > 0 ? 'alta' : 'normal'
+        },
+        {
+            titulo: 'Cobertura de dados',
+            estado: 'Em expansão',
+            texto: 'Dólar, Euro, PIB, desemprego, balança comercial e dívida pública têm estrutura visual preparada, mas ainda não estão conectados nesta página.',
+            prioridade: 'neutra'
+        }
+    ];
+    const glossarioEconomico = [
+        {
+            termo: 'O que é a Selic?',
+            definicao: 'É a taxa básica de juros da economia brasileira. Ela orienta o custo do dinheiro no país.'
+        },
+        {
+            termo: 'Por que a inflação importa?',
+            definicao: 'Porque mostra a variação dos preços e ajuda a medir se o salário compra mais ou menos.'
+        },
+        {
+            termo: 'Como o dólar afeta os preços?',
+            definicao: 'Uma alta do dólar pode encarecer produtos importados, combustíveis e insumos usados pela indústria.'
+        },
+        {
+            termo: 'O que significa crescimento do PIB?',
+            definicao: 'Significa aumento da produção da economia. Em geral, indica mais atividade, renda e demanda.'
+        },
+        {
+            termo: 'Como interpretar correlação?',
+            definicao: 'Correlação positiva indica movimentos parecidos; negativa indica movimentos opostos; fraca indica pouca relação.'
+        },
+        {
+            termo: 'O que é inflação acumulada?',
+            definicao: 'É a soma composta da variação de preços ao longo de um intervalo, como 12 meses.'
+        }
+    ];
+    const fontesDados = [
+        {
+            nome: 'Banco Central do Brasil / SGS',
+            uso: 'Séries de Selic e IPCA usadas nos indicadores e no gráfico.',
+            status: 'Conectado'
+        },
+        {
+            nome: 'Base local de preços',
+            uso: 'Histórico dos produtos monitorados, categorias, cores e comparações.',
+            status: 'Disponível'
+        },
+        {
+            nome: 'Fontes futuras previstas',
+            uso: 'Dólar, Euro, PIB, desemprego, balança comercial, dívida pública e mercado financeiro.',
+            status: 'Preparado'
         }
     ];
     const linhasAnalise = analiseText ? analiseText.split('\n') : [];
@@ -443,6 +679,21 @@ const Analise = () => {
                 </div>
             </section>
 
+            <section className="analise-section-heading">
+                <div>
+                    <span className="eyebrow">Indicadores principais</span>
+                    <h2>Leitura rápida do cenário atual</h2>
+                    <p>
+                        Os cards abaixo mostram apenas informações já disponíveis na página: Selic,
+                        IPCA, produtos selecionados e séries ativas no gráfico.
+                    </p>
+                </div>
+                <div className="analise-section-meta">
+                    <span>Última atualização</span>
+                    <strong>{dataAtualizacao || '-'}</strong>
+                </div>
+            </section>
+
             <section className="analise-kpi-grid">
                 {indicadoresAnalise.map((indicador) => (
                     <article key={indicador.nome} className="ec-indicador-card analise-kpi-card">
@@ -468,6 +719,65 @@ const Analise = () => {
                         </div>
                     </article>
                 ))}
+            </section>
+
+            <section className="analise-economic-map">
+                <div className="analise-section-heading">
+                    <div>
+                        <span className="eyebrow">Mapa econômico</span>
+                        <h2>Indicadores nacionais e contexto de uso</h2>
+                        <p>
+                            A estrutura prevê os principais indicadores de uma plataforma econômica.
+                            Onde ainda não há dado conectado, o espaço fica sinalizado como preparado.
+                        </p>
+                    </div>
+                    <div className="analise-section-meta">
+                        <span>Cobertura atual</span>
+                        <strong>Selic + IPCA + preços</strong>
+                    </div>
+                </div>
+
+                <div className="analise-economic-grid">
+                    {indicadoresEstruturais.map((indicador) => (
+                        <article
+                            key={indicador.nome}
+                            className={`analise-economic-card${indicador.disponivel ? '' : ' is-planned'}`}
+                        >
+                            <div className="analise-economic-card-head">
+                                <div>
+                                    <span>{indicador.nome}</span>
+                                    <strong>{indicador.valor}</strong>
+                                </div>
+                                <em>{indicador.status}</em>
+                            </div>
+
+                            <dl className="analise-economic-facts">
+                                <div>
+                                    <dt>Variação</dt>
+                                    <dd>{indicador.variacao}</dd>
+                                </div>
+                                <div>
+                                    <dt>Histórico</dt>
+                                    <dd>{indicador.historico}</dd>
+                                </div>
+                                <div>
+                                    <dt>Fonte</dt>
+                                    <dd>{indicador.fonte}</dd>
+                                </div>
+                                <div>
+                                    <dt>Atualização</dt>
+                                    <dd>{indicador.atualizacao}</dd>
+                                </div>
+                            </dl>
+
+                            <div className="analise-economic-text">
+                                <p><strong>Explicação simples:</strong> {indicador.explicacao}</p>
+                                <p><strong>Impacto na vida real:</strong> {indicador.impacto}</p>
+                                <p><strong>Interpretação:</strong> {indicador.interpretacao}</p>
+                            </div>
+                        </article>
+                    ))}
+                </div>
             </section>
 
             <div className="ec-card analise-config-card">
@@ -777,6 +1087,81 @@ const Analise = () => {
                     </section>
                 </div>
             </div>
+
+            <section className="analise-watch-section">
+                <div className="analise-section-heading">
+                    <div>
+                        <span className="eyebrow">Pontos de atenção</span>
+                        <h2>O que observar antes de tirar conclusões</h2>
+                        <p>
+                            Estes blocos separam leitura econômica de dado bruto, ajudando a entender
+                            onde há pressão, estabilidade ou necessidade de mais contexto.
+                        </p>
+                    </div>
+                </div>
+
+                <div className="analise-watch-grid">
+                    {pontosAtencao.map((ponto) => (
+                        <article key={ponto.titulo} className={`analise-watch-card ${ponto.prioridade}`}>
+                            <div>
+                                <span>{ponto.titulo}</span>
+                                <strong>{ponto.estado}</strong>
+                            </div>
+                            <p>{ponto.texto}</p>
+                        </article>
+                    ))}
+                </div>
+            </section>
+
+            <section className="analise-knowledge-section">
+                <article className="ec-card analise-glossary-card">
+                    <span className="eyebrow">Glossário econômico</span>
+                    <h2>Economia explicada sem perder profundidade</h2>
+                    <p>
+                        Conceitos curtos para ajudar a interpretar os indicadores antes de comparar séries,
+                        preços e tendências.
+                    </p>
+
+                    <div className="analise-glossary-grid">
+                        {glossarioEconomico.map((item) => (
+                            <div key={item.termo} className="analise-glossary-item">
+                                <h3>{item.termo}</h3>
+                                <p>{item.definicao}</p>
+                            </div>
+                        ))}
+                    </div>
+                </article>
+
+                <article className="ec-card analise-sources-card">
+                    <span className="eyebrow">Fontes dos dados</span>
+                    <h2>Origem, cobertura e atualização</h2>
+                    <p>
+                        A página mostra de forma explícita o que já está conectado e o que ainda é
+                        apenas estrutura preparada para integração futura.
+                    </p>
+
+                    <div className="analise-sources-list">
+                        {fontesDados.map((fonte) => (
+                            <div key={fonte.nome} className="analise-source-item">
+                                <div>
+                                    <strong>{fonte.nome}</strong>
+                                    <span>{fonte.uso}</span>
+                                </div>
+                                <em>{fonte.status}</em>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="analise-update-box">
+                        <span>Última atualização registrada</span>
+                        <strong>{dataAtualizacao || '-'}</strong>
+                        <p>
+                            A atualização depende da base local e da API já existente. Nenhuma nova
+                            chamada externa foi adicionada nesta etapa visual.
+                        </p>
+                    </div>
+                </article>
+            </section>
         </main>
     );
 };
