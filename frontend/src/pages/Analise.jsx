@@ -574,10 +574,10 @@ const Analise = () => {
                         const prod = dados.dadosEconomicos.produtos[chave];
                         if (!prod) return null;
                         return (
-                            <span key={chave} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${prod.cor}55`, borderRadius: 99, fontSize: '0.78rem', color: 'var(--c5)' }}>
+                            <span key={chave} className="analise-selected-chip" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${prod.cor}55`, borderRadius: 99, fontSize: '0.78rem', color: 'var(--c5)' }}>
                                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: prod.cor, display: 'inline-block' }} />
                                 {prod.nome}
-                                <button onClick={() => setSelecao(prev => prev.filter(x => x !== chave))} style={{ background: 'none', border: 'none', color: 'var(--c3)', cursor: 'pointer', fontSize: '0.8rem', padding: 0, lineHeight: 1, marginLeft: 2 }}>✕</button>
+                                <button className="analise-chip-remove" onClick={() => setSelecao(prev => prev.filter(x => x !== chave))} style={{ background: 'none', border: 'none', color: 'var(--c3)', cursor: 'pointer', fontSize: '0.8rem', padding: 0, lineHeight: 1, marginLeft: 2 }}>✕</button>
                             </span>
                         );
                     })}

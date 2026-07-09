@@ -708,6 +708,24 @@ button.secondary-btn:hover {
   font-weight: 650;
 }
 
+.analise-selected-chip {
+  min-height: 40px;
+}
+
+.analise-chip-remove {
+  min-width: 40px;
+  min-height: 40px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+}
+
+.analise-chip-remove:hover,
+.analise-chip-remove:focus-visible {
+  color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
 .analise-chart-card {
   min-width: 0;
   padding: 34px;
@@ -752,7 +770,8 @@ button.secondary-btn:hover {
 
 .analise-chart-frame {
   position: relative;
-  min-width: 920px;
+  width: 100%;
+  min-width: 0;
   height: 520px;
 }
 
@@ -1568,7 +1587,28 @@ button.secondary-btn:hover {
   }
 }
 
-@media (max-width: 820px) {
+@media (min-width: 768px) and (max-width: 1023px) {
+  .analise-page {
+    grid-template-columns: minmax(240px, 0.78fr) minmax(0, 1.22fr);
+    width: min(100% - 24px, 1320px);
+    gap: 18px;
+    padding-top: 28px;
+  }
+
+  .analise-chart-card .ec-chart-container {
+    min-height: 470px;
+  }
+
+  .analise-chart-frame {
+    height: 420px;
+  }
+
+  .analise-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px) {
   .analise-page {
     grid-template-columns: 1fr;
     width: min(100% - 24px, 1320px);
