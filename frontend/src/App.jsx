@@ -7,6 +7,8 @@ import Analise from './pages/Analise';
 import Dados from './pages/Dados';
 import Financeiro from './pages/Financeiro';
 import Simulador from './pages/Simulador';
+import Educacao from './pages/Educacao';
+import Sobre from './pages/Sobre';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AuthModal from './components/AuthModal';
 import Header from './components/Header';
@@ -98,6 +100,8 @@ function App() {
         <Route path="/dados" element={<ProtectedRoute user={user} loading={loading}><Dados user={user} /></ProtectedRoute>} />
         <Route path="/financeiro" element={<ProtectedRoute user={user} loading={loading}><Financeiro user={user} /></ProtectedRoute>} />
         <Route path="/simulador" element={<ProtectedRoute user={user} loading={loading}><Simulador user={user} /></ProtectedRoute>} />
+        <Route path="/educacao" element={<ProtectedRoute user={user} loading={loading}><Educacao user={user} /></ProtectedRoute>} />
+        <Route path="/sobre" element={<ProtectedRoute user={user} loading={loading}><Sobre user={user} /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

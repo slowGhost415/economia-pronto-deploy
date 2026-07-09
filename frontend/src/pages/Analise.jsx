@@ -482,7 +482,7 @@ const Analise = () => {
         },
         {
             nome: 'Dólar',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Histórico futuro',
@@ -495,7 +495,7 @@ const Analise = () => {
         },
         {
             nome: 'Euro',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Histórico futuro',
@@ -508,7 +508,7 @@ const Analise = () => {
         },
         {
             nome: 'PIB',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Série futura',
@@ -521,7 +521,7 @@ const Analise = () => {
         },
         {
             nome: 'Desemprego',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Série futura',
@@ -534,7 +534,7 @@ const Analise = () => {
         },
         {
             nome: 'Inflação acumulada',
-            valor: 'Aguardando cálculo',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'A definir',
@@ -547,7 +547,7 @@ const Analise = () => {
         },
         {
             nome: 'Mercado financeiro',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Indicadores futuros',
@@ -560,7 +560,7 @@ const Analise = () => {
         },
         {
             nome: 'Balança comercial',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Série futura',
@@ -573,7 +573,7 @@ const Analise = () => {
         },
         {
             nome: 'Dívida pública',
-            valor: 'Aguardando dado',
+            valor: 'Em breve',
             status: 'Estrutura preparada',
             variacao: 'Pendente',
             historico: 'Série futura',
@@ -585,6 +585,8 @@ const Analise = () => {
             disponivel: false
         }
     ];
+    const indicadoresDisponiveis = indicadoresEstruturais.filter(indicador => indicador.disponivel);
+    const indicadoresPlanejados = indicadoresEstruturais.filter(indicador => !indicador.disponivel);
     const pontosAtencao = [
         {
             titulo: 'Juros e crédito',
@@ -670,10 +672,10 @@ const Analise = () => {
             <section className="analise-hero">
                 <div className="analise-hero-copy">
                     <span className="eyebrow">Painel de inteligência econômica</span>
-                    <h1>Análise econômica com visão de dashboard profissional.</h1>
+                    <h1>Resumo do cenário econômico.</h1>
                     <p>
-                        Compare preços, Selic e IPCA em uma tela ampla, com leitura rápida para
-                        tendências, correlações e impacto no consumo.
+                        Leitura automática entre dados observados, tendências, pontos de atenção
+                        e impacto no consumo.
                     </p>
                 </div>
 
@@ -738,11 +740,11 @@ const Analise = () => {
             <section className="analise-economic-map">
                 <div className="analise-section-heading">
                     <div>
-                        <span className="eyebrow">Mapa econômico</span>
-                        <h2>Indicadores nacionais e contexto de uso</h2>
+                        <span className="eyebrow">Indicadores conectados</span>
+                        <h2>Dados disponíveis agora, com interpretação econômica.</h2>
                         <p>
-                            A estrutura prevê os principais indicadores de uma plataforma econômica.
-                            Onde ainda não há dado conectado, o espaço fica sinalizado como preparado.
+                            Esta área destaca o que já está disponível para análise. Fontes futuras
+                            aparecem separadas para não competir com os dados reais.
                         </p>
                     </div>
                     <div className="analise-section-meta">
@@ -752,7 +754,7 @@ const Analise = () => {
                 </div>
 
                 <div className="analise-economic-grid">
-                    {indicadoresEstruturais.map((indicador) => (
+                    {indicadoresDisponiveis.map((indicador) => (
                         <article
                             key={indicador.nome}
                             className={`analise-economic-card${indicador.disponivel ? '' : ' is-planned'}`}
@@ -791,6 +793,18 @@ const Analise = () => {
                             </div>
                         </article>
                     ))}
+                </div>
+
+                <div className="analise-planned-sources">
+                    <div>
+                        <span className="eyebrow">Fontes planejadas</span>
+                        <h3>Próximas integrações para ampliar a leitura macroeconômica.</h3>
+                    </div>
+                    <div className="analise-planned-list">
+                        {indicadoresPlanejados.map((indicador) => (
+                            <span key={indicador.nome}>{indicador.nome}</span>
+                        ))}
+                    </div>
                 </div>
             </section>
 

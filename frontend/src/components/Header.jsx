@@ -5,15 +5,15 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
     const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const isDashboard = user && ['/inicio', '/analise', '/dados', '/financeiro', '/simulador'].includes(location.pathname);
+    const isDashboard = user && ['/inicio', '/analise', '/dados', '/financeiro', '/simulador', '/educacao', '/sobre'].includes(location.pathname);
 
     const navLinks = [
         { to: '/inicio', label: 'Início' },
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
         { to: '/analise#graficos', label: 'Gráficos' },
-        { to: '/analise#educacao-economica', label: 'Educação Econômica' },
-        { to: '/analise#sobre-site', label: 'Sobre' },
+        { to: '/educacao', label: 'Educação Econômica' },
+        { to: '/sobre', label: 'Sobre' },
     ];
 
     useEffect(() => {

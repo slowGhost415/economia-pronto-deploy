@@ -1,33 +1,36 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     carregarDadosStorage,
-    calcularTendencia,
     atualizarSelicAPI,
     buscarIndicadoresBCB
 } from '../data/dadosEconomicos';
 import { getSystemDashboard, performSystemAction } from '../services/systemService';
 import EconomicOrb from '../components/EconomicOrb';
-import AIAssistant from '../components/AIAssistant';
+import {
+    Badge,
+    CTASection,
+    FeatureCard,
+    InsightCard,
+    MetricCard,
+    SectionHeader,
+    SourceStatusCard
+} from '../components/SiteComponents';
 
-const Sparkline = ({ dados, cor }) => {
-    if (!dados || dados.length < 2) return null;
-    const min = Math.min(...dados);
-    const max = Math.max(...dados);
+const MiniTrend = ({ values = [], tone = 'cyan' }) => {
+    if (values.length < 2) return <div className={`mini-trend ${tone}`} aria-hidden="true" />;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
     const range = max - min || 1;
-    const w = 80, h = 32;
-    const pts = dados.map((v, i) => {
-        const x = (i / (dados.length - 1)) * w;
-        const y = h - ((v - min) / range) * h;
+    const points = values.map((value, index) => {
+        const x = (index / (values.length - 1)) * 100;
+        const y = 46 - ((value - min) / range) * 42;
         return `${x},${y}`;
     }).join(' ');
-    const last = dados[dados.length - 1];
-    const prev = dados[dados.length - 2];
-    const trend = last >= prev ? cor || '#4caf7d' : '#e05252';
+
     return (
-        <svg width={w} height={h} style={{ display: 'block', opacity: 0.85 }}>
-            <polyline points={pts} fill="none" stroke={trend} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-            <circle cx={(dados.length - 1) / (dados.length - 1) * w} cy={h - ((last - min) / range) * h} r="3" fill={trend} />
+        <svg className="mini-trend" viewBox="0 0 100 52" role="img" aria-label="Tendência do indicador">
+            <polyline points={points} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
     );
 };
@@ -40,6 +43,14 @@ const Inicio = ({ user }) => {
     const [historico, setHistorico] = useState([]);
 
     useEffect(() => {
+        document.title = 'Economic | Economia visual, indicadores e educação financeira';
+        let description = document.querySelector('meta[name="description"]');
+        if (!description) {
+            description = document.createElement('meta');
+            description.setAttribute('name', 'description');
+            document.head.appendChild(description);
+        }
+        description.setAttribute('content', 'Economic organiza Selic, IPCA, preços, simulações e educação econômica em uma experiência visual para entender economia sem confusão.');
         const d = carregarDadosStorage();
         setDados(d);
         Promise.all([
@@ -49,7 +60,7 @@ const Inicio = ({ user }) => {
         ]).then(([ind, dadosAtualizado, dashRes]) => {
             setIndicadores(ind);
             setDados({ ...dadosAtualizado });
-            setHistorico((dashRes.interactions || []).slice(0, 6));
+            setHistorico((dashRes.interactions || []).slice(0, 4));
         }).finally(() => setCarregando(false));
     }, []);
 
@@ -57,245 +68,232 @@ const Inicio = ({ user }) => {
         try {
             await performSystemAction({ tipo_acao, descricao });
             const res = await getSystemDashboard();
-            setHistorico((res.interactions || []).slice(0, 6));
-        } catch { }
+            setHistorico((res.interactions || []).slice(0, 4));
+        } catch { /* registro secundário */ }
         navigate(destino);
     };
 
-    const tendencia = dados ? calcularTendencia(dados.dadosEconomicos.selic) : '-';
-    const tendenciaIcone = tendencia === 'alta' ? '▲' : tendencia === 'queda' ? '▼' : '▬';
-    const tendenciaCor = tendencia === 'alta' ? 'var(--c-danger)' : tendencia === 'queda' ? 'var(--c-success)' : 'var(--c4)';
-
-    const tempoRelativo = (dataStr) => {
-        const diff = (Date.now() - new Date(dataStr)) / 1000;
-        if (diff < 60) return 'agora';
-        if (diff < 3600) return `${Math.floor(diff / 60)}min atrás`;
-        if (diff < 86400) return `${Math.floor(diff / 3600)}h atrás`;
-        return `${Math.floor(diff / 86400)}d atrás`;
-    };
-
     const formatarDataAtualizacao = (iso) => {
-        if (!iso) return '-';
-        return new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        if (!iso) return 'Fonte planejada';
+        return new Date(iso).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
-    const renderValor = (val, sufixo = '') => {
-        if (carregando) return <span style={{ fontSize: '0.9rem', color: 'var(--c3)' }}>Buscando...</span>;
-        if (val === null || val === undefined) return <span style={{ color: 'var(--c3)' }}>—</span>;
-        return <>{Number(val).toFixed(2)}{sufixo}</>;
+    const valor = (number, suffix = '') => {
+        if (carregando) return '...';
+        if (number === null || number === undefined) return 'Em breve';
+        return `${Number(number).toFixed(2)}${suffix}`;
     };
 
-    const selicAtual = indicadores?.selic;
-    const ipcaAtual = indicadores?.ipca;
-    const selicHist = indicadores?.selicHistorico || [];
-    const ipcaHist = indicadores?.ipcaHistorico || [];
-    const ipcaAcum = ipcaHist.length ? ipcaHist.reduce((a, b) => a + b, 0) : null;
-    const selicMin = selicHist.length ? Math.min(...selicHist) : null;
-    const selicMax = selicHist.length ? Math.max(...selicHist) : null;
+    const produtosCount = dados ? Object.keys(dados.dadosEconomicos.produtos).length : 0;
+    const selicHist = indicadores?.selicHistorico || dados?.dadosEconomicos.selic || [];
+    const ipcaHist = indicadores?.ipcaHistorico || dados?.dadosEconomicos.inflacao || [];
+    const ultimaAtualizacao = indicadores?.lastUpdate || dados?.meta?.lastUpdate;
 
-    const acoes = [
+    const features = [
         {
-            id: 'analise', icon: '📊', titulo: 'Análise Avançada',
-            desc: 'Gráficos interativos, correlação entre produtos, tendências e análise automática.',
-            destino: '/analise', tipo: 'análise', descricao: 'Acessou análise avançada', cor: '#4A5C6A'
+            marker: '01',
+            title: 'Análise avançada',
+            description: 'Compare preços, Selic e IPCA com leitura automática de tendência, correlação e impacto.',
+            action: 'Abrir análises',
+            onClick: () => registrarAcao('analise', 'Acessou análise econômica', '/analise')
         },
         {
-            id: 'dados', icon: '📋', titulo: 'Tabelas e Histórico',
-            desc: 'Preços mensais, variações percentuais, histórico da Selic e exportação CSV.',
-            destino: '/dados', tipo: 'dados', descricao: 'Acessou tabela de dados', cor: '#3D5166'
+            marker: '02',
+            title: 'Indicadores econômicos',
+            description: 'Consulte séries, variações, preços mensais e histórico em uma área analítica limpa.',
+            action: 'Ver indicadores',
+            onClick: () => registrarAcao('dados', 'Acessou indicadores', '/dados')
         },
         {
-            id: 'financeiro', icon: '💰', titulo: 'Controle Financeiro',
-            desc: 'Receitas, despesas, metas e carteira de investimentos pessoais.',
-            destino: '/financeiro', tipo: 'financeiro', descricao: 'Acessou controle financeiro', cor: '#2E6B4F'
+            marker: '03',
+            title: 'Simulador financeiro',
+            description: 'Projete juros compostos, aportes e cenários financeiros sem perder o contexto econômico.',
+            action: 'Simular cenários',
+            onClick: () => registrarAcao('simulador', 'Acessou simulador', '/simulador')
         },
         {
-            id: 'simulador', icon: '📈', titulo: 'Simulador',
-            desc: 'Projete seu patrimônio com juros compostos e aportes mensais.',
-            destino: '/simulador', tipo: 'simulador', descricao: 'Acessou simulador financeiro', cor: '#5C4A1E'
-        },
+            marker: '04',
+            title: 'Educação econômica',
+            description: 'Aprenda Selic, inflação, câmbio, PIB e consumo com exemplos conectados aos dados.',
+            action: 'Aprender conceitos',
+            to: '/educacao'
+        }
     ];
 
+    const trilhas = ['Selic', 'Inflação', 'Câmbio', 'PIB', 'Consumo', 'Orçamento', 'Juros compostos', 'Impostos'];
+
     return (
-        <main className="ec-container">
-            <div className="ec-hero">
-                <div className="hero-copy">
-                    <div className="ec-hero-badge">Sistema economico ativo</div>
-                    <h1>Inteligencia visual para entender precos, juros e consumo.</h1>
+        <main className="site-page home-page">
+            <section className="home-hero site-shell">
+                <div className="home-hero-copy">
+                    <Badge tone="cyan">Análise econômica visual</Badge>
+                    <h1>Entenda preços, juros e inflação sem se perder em números.</h1>
                     <p>
-                        Ola, {user?.nome?.split(' ')[0]}. Monitore Selic, IPCA, produtos essenciais,
-                        financas pessoais, simulacoes e impostos em uma experiencia mais limpa e futurista.
+                        Compare Selic, IPCA, produtos essenciais e simulações financeiras em
+                        uma experiência visual, clara e interativa.
                     </p>
-                    <div className="ec-hero-actions">
-                        <button className="ec-btn" onClick={() => registrarAcao('analise', 'Acessou analise avancada', '/analise')}>
-                            Ver analise
+                    <div className="hero-actions">
+                        <button type="button" className="ec-btn" onClick={() => registrarAcao('analise', 'Começou análise pela Home', '/analise')}>
+                            Começar análise
                         </button>
-                        <button className="ec-btn ec-btn-outline" onClick={() => registrarAcao('simulador', 'Acessou simulador financeiro', '/simulador')}>
-                            Calcular cenarios
-                        </button>
+                        <Link className="ec-btn ec-btn-outline" to="/educacao">
+                            Explorar educação econômica
+                        </Link>
                     </div>
-                    <div className="ec-hero-stats">
-                        <div className="ec-hero-stat">
-                            <div className="ec-hero-stat-value">11</div>
-                            <div className="ec-hero-stat-label">Produtos</div>
-                        </div>
-                        <div className="ec-hero-stat">
-                            <div className="ec-hero-stat-value">12m</div>
-                            <div className="ec-hero-stat-label">Historico</div>
-                        </div>
-                        <div className="ec-hero-stat">
-                            <div className="ec-hero-stat-value">BCB</div>
-                            <div className="ec-hero-stat-label">Fonte oficial</div>
-                        </div>
-                        {indicadores?.lastUpdate && (
-                            <div className="ec-hero-stat">
-                                <div className="ec-hero-stat-value compact-stat">
-                                    {formatarDataAtualizacao(indicadores.lastUpdate)}
-                                </div>
-                                <div className="ec-hero-stat-label">Atualizacao</div>
-                            </div>
-                        )}
+
+                    <div className="home-metrics-row" aria-label="Indicadores rápidos">
+                        <MetricCard label="Selic atual" value={valor(indicadores?.selic, '%')} meta="Banco Central / SGS" tone="cyan" />
+                        <MetricCard label="IPCA" value={valor(indicadores?.ipca, '%')} meta="Inflação monitorada" tone="amber" />
+                        <MetricCard label="Produtos monitorados" value={produtosCount || '...'} meta="Base local de preços" />
+                        <MetricCard label="Última atualização" value={formatarDataAtualizacao(ultimaAtualizacao)} meta="Cache local + fontes oficiais" />
                     </div>
                 </div>
-                <div className="hero-orb-panel">
-                    <EconomicOrb />
-                    <div className="orb-caption">
-                        <span>Mapa 3D de pressao economica</span>
-                        <strong>Selic + IPCA + consumo</strong>
+
+                <aside className="home-visual-panel" aria-label="Painel visual de pressão econômica">
+                    <div className="visual-panel-glass">
+                        <EconomicOrb />
+                        <div className="visual-panel-overlay">
+                            <span>Pressão econômica</span>
+                            <strong>Juros, preços e consumo em uma leitura só</strong>
+                        </div>
+                    </div>
+                    <div className="floating-dashboard-card">
+                        <span>Selic x IPCA</span>
+                        <MiniTrend values={selicHist} />
+                    </div>
+                    <div className="floating-dashboard-card bottom">
+                        <span>Poder de compra</span>
+                        <MiniTrend values={ipcaHist} tone="amber" />
+                    </div>
+                </aside>
+            </section>
+
+            <section className="site-section site-shell">
+                <SectionHeader
+                    eyebrow="O que o Economic faz"
+                    title="Dados econômicos organizados para leitura, comparação e decisão."
+                    description="Cada módulo tem uma função clara: observar indicadores, comparar séries, aprender conceitos e transformar números em contexto."
+                />
+                <div className="feature-grid">
+                    {features.map((feature) => <FeatureCard key={feature.title} {...feature} />)}
+                </div>
+            </section>
+
+            <section className="site-section site-shell split-section">
+                <SectionHeader
+                    eyebrow="Como funciona"
+                    title="Uma sequência simples para entender o cenário."
+                    description="A navegação foi pensada como site: primeiro contexto, depois dados, análise e aprendizado."
+                />
+                <div className="steps-rail">
+                    {[
+                        ['Escolha os indicadores', 'Selecione período, produtos e séries econômicas que deseja acompanhar.'],
+                        ['Compare preços, Selic e IPCA', 'Veja tendências e relações entre custo de vida, juros e inflação.'],
+                        ['Entenda o impacto', 'Leia interpretações curtas sobre consumo, crédito e orçamento pessoal.']
+                    ].map(([title, text], index) => (
+                        <InsightCard
+                            key={title}
+                            eyebrow={`Passo ${index + 1}`}
+                            title={title}
+                            description={text}
+                            tone={index === 1 ? 'cyan' : 'neutral'}
+                        />
+                    ))}
+                </div>
+            </section>
+
+            <section className="site-section site-shell">
+                <SectionHeader
+                    eyebrow="Painel demonstrativo"
+                    title="Um preview do dashboard, sem cara de planilha."
+                    description="A visão combina indicadores, tendência e interpretação para dar contexto antes de entrar na análise completa."
+                >
+                    <Link className="ec-btn ec-btn-outline" to="/analise#graficos">Ver gráficos</Link>
+                </SectionHeader>
+
+                <div className="dashboard-preview">
+                    <div className="preview-main-chart">
+                        <div className="preview-chart-head">
+                            <span>Comparativo econômico</span>
+                            <Badge tone="green">Fonte conectada</Badge>
+                        </div>
+                        <div className="preview-chart-lines" aria-hidden="true">
+                            <span className="line-one" />
+                            <span className="line-two" />
+                            <span className="line-three" />
+                        </div>
+                        <p>Preços usam eixo de valores; Selic e IPCA entram como pressão macroeconômica para leitura do consumo.</p>
+                    </div>
+                    <div className="preview-side-stack">
+                        <MetricCard label="Produtos" value={produtosCount || 0} meta="alimentos, combustíveis e serviços" />
+                        <MetricCard
+                            label="Dólar PTAX"
+                            value={carregando ? '...' : indicadores?.dolar ? `R$ ${Number(indicadores.dolar).toFixed(2)}` : 'Em breve'}
+                            meta="Fonte planejada ou cache BCB"
+                            tone="amber"
+                        />
+                        <InsightCard title="Insight principal" description="Quando juros e inflação caminham juntos, o crédito e o orçamento costumam sentir primeiro." tone="cyan" />
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div className="ec-section-title" style={{ marginBottom: 16 }}>Indicadores em tempo real</div>
-
-            <div className="ec-indicadores-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: 14 }}>
-                {[
-                    {
-                        icon: '📈', label: 'Taxa Selic', valor: renderValor(selicAtual, '%'),
-                        sub: 'Meta anual — Banco Central', hist: selicHist, cor: '#4caf7d',
-                        badge: selicAtual ? (selicAtual > 10 ? { txt: 'Alta', c: 'var(--c-danger)' } : { txt: 'Baixa', c: 'var(--c-success)' }) : null
-                    },
-                    {
-                        icon: '📉', label: 'Inflação IPCA', valor: renderValor(ipcaAtual, '%'),
-                        sub: 'Variação mensal — IBGE', hist: ipcaHist, cor: '#e05252',
-                        badge: ipcaAtual ? (ipcaAtual > 5 ? { txt: 'Acima da meta', c: 'var(--c-danger)' } : { txt: 'Dentro da meta', c: 'var(--c-success)' }) : null
-                    },
-                    {
-                        icon: '🏦', label: 'CDI', valor: renderValor(indicadores?.cdi, '%'),
-                        sub: 'Taxa diária — B3', hist: [], cor: '#9BA8AB', badge: null
-                    },
-                    {
-                        icon: '💵', label: 'Dólar (PTAX)',
-                        valor: carregando
-                            ? <span style={{ fontSize: '0.9rem', color: 'var(--c3)' }}>Buscando...</span>
-                            : indicadores?.dolar ? `R$ ${Number(indicadores.dolar).toFixed(2)}` : <span style={{ color: 'var(--c3)' }}>—</span>,
-                        sub: 'Cotação média mensal — BCB', hist: [], cor: '#c9a84c', badge: null
-                    },
-                ].map((card, i) => (
-                    <div key={i} className="ec-indicador-card" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div className="ec-indicador-icon" style={{ marginBottom: 0 }}>{card.icon}</div>
-                            {card.badge && (
-                                <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 99, background: card.badge.c + '22', color: card.badge.c, border: `1px solid ${card.badge.c}44` }}>
-                                    {card.badge.txt}
-                                </span>
-                            )}
-                        </div>
-                        <div className="ec-indicador-label" style={{ marginTop: 10 }}>{card.label}</div>
-                        <div className="ec-indicador-valor">{card.valor}</div>
-                        <div className="ec-indicador-sub">{card.sub}</div>
-                        {card.hist.length > 1 && (
-                            <div style={{ marginTop: 8 }}>
-                                <Sparkline dados={card.hist} cor={card.cor} />
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            <div className="ec-indicadores-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 28 }}>
-                <div className="ec-indicador-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                        <div className="ec-indicador-icon" style={{ marginBottom: 0 }}>📊</div>
-                        <span style={{ fontSize: '1.4rem', fontWeight: 800, color: tendenciaCor }}>{tendenciaIcone}</span>
-                    </div>
-                    <div className="ec-indicador-label">Tendência Selic</div>
-                    <div className="ec-indicador-valor" style={{ fontSize: '1.3rem', color: tendenciaCor }}>{tendencia}</div>
-                    <div className="ec-indicador-sub">Baseado nos últimos 12 meses</div>
+            <section className="site-section site-shell">
+                <SectionHeader
+                    eyebrow="Educação econômica"
+                    title="Aprenda o conceito e volte para o dado com mais clareza."
+                    description="As trilhas conectam explicações curtas com indicadores reais da plataforma."
+                />
+                <div className="learning-chip-grid">
+                    {trilhas.map((item) => (
+                        <Link key={item} to="/educacao" className="learning-chip">{item}</Link>
+                    ))}
                 </div>
+            </section>
 
-                <div className="ec-indicador-card">
-                    <div className="ec-indicador-icon">🔢</div>
-                    <div className="ec-indicador-label">Selic — Intervalo (12m)</div>
-                    <div className="ec-indicador-valor" style={{ fontSize: '1.1rem' }}>
-                        {carregando ? '...' : selicMin !== null ? `${selicMin.toFixed(2)}% — ${selicMax.toFixed(2)}%` : '—'}
-                    </div>
-                    <div className="ec-indicador-sub">Mín. — Máx. no período</div>
-                    {selicHist.length > 1 && (
-                        <div style={{ marginTop: 10 }}>
-                            <div style={{ height: 6, background: 'rgba(255,255,255,0.07)', borderRadius: 99, overflow: 'hidden', position: 'relative' }}>
-                                {selicHist.map((v, i) => {
-                                    const pct = selicMax !== selicMin ? ((v - selicMin) / (selicMax - selicMin)) * 100 : 50;
-                                    return (
-                                        <div key={i} style={{ position: 'absolute', left: `${(i / (selicHist.length - 1)) * 94}%`, top: 0, width: '6%', height: '100%', background: `rgba(76,175,125,${0.3 + (pct / 100) * 0.7})` }} />
-                                    );
-                                })}
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--c3)', marginTop: 4 }}>
-                                <span>{indicadores?.periodos?.[0] || ''}</span>
-                                <span>{indicadores?.periodos?.[indicadores.periodos.length - 1] || ''}</span>
-                            </div>
-                        </div>
-                    )}
+            <section className="site-section site-shell">
+                <SectionHeader
+                    eyebrow="Confiança e fontes"
+                    title="Transparência sobre o que está conectado e o que vem depois."
+                    description="O site separa dados disponíveis de fontes planejadas para evitar placeholders dominando a experiência."
+                />
+                <div className="source-grid">
+                    <SourceStatusCard title="Banco Central / SGS" status="Conectado" tone="green" description="Selic, IPCA, CDI e séries oficiais usadas nos indicadores." />
+                    <SourceStatusCard title="Base local de preços" status="Disponível" tone="cyan" description="Histórico de produtos essenciais usado em comparações e tabelas." />
+                    <SourceStatusCard title="PIB, desemprego e dívida" status="Roadmap" tone="amber" description="Fontes planejadas para ampliar a leitura macroeconômica." />
                 </div>
+            </section>
 
-                <div className="ec-indicador-card">
-                    <div className="ec-indicador-icon">🔥</div>
-                    <div className="ec-indicador-label">IPCA Acumulado (12m)</div>
-                    <div className="ec-indicador-valor" style={{ fontSize: '1.3rem', color: ipcaAcum && ipcaAcum > 5 ? 'var(--c-danger)' : 'var(--c5)' }}>
-                        {carregando ? '...' : ipcaAcum !== null ? `${ipcaAcum.toFixed(2)}%` : '—'}
-                    </div>
-                    <div className="ec-indicador-sub">Soma mensal dos últimos 12 meses</div>
-                    {ipcaAcum !== null && !carregando && (
-                        <div style={{ marginTop: 10, padding: '6px 10px', background: ipcaAcum > 5 ? 'rgba(224,82,82,0.1)' : 'rgba(76,175,125,0.1)', borderRadius: 8, fontSize: '0.78rem', color: ipcaAcum > 5 ? 'var(--c-danger)' : 'var(--c-success)' }}>
-                            {ipcaAcum > 5 ? 'Acima da meta de 5% ao ano' : 'Dentro da meta de 5% ao ano'}
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="ec-section-title" style={{ marginBottom: 16 }}>Acesso rápido</div>
-
-            <div className="ec-acesso-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: 28 }}>
-                {acoes.map(a => (
-                    <button key={a.id} className="ec-acesso-card" onClick={() => registrarAcao(a.tipo, a.descricao, a.destino)} style={{ border: 'none', textAlign: 'left' }}>
-                        <div className="ec-acesso-card-icon" style={{ background: a.cor + '55', fontSize: '1.5rem' }}>{a.icon}</div>
-                        <div className="ec-acesso-card-info">
-                            <h3>{a.titulo}</h3>
-                            <p>{a.desc}</p>
-                        </div>
-                    </button>
-                ))}
-            </div>
-
-            <AIAssistant />
-
-            <div className="ec-section-title" style={{ marginBottom: 12 }}>Atividade recente</div>
-            <div className="ec-historico-lista">
-                {historico.length === 0 ? (
-                    <div className="ec-historico-vazio">Nenhuma atividade registrada ainda. Explore as seções acima.</div>
-                ) : (
-                    historico.map(item => (
-                        <div key={item.id} className="ec-historico-item">
-                            <div className="ec-historico-dot"></div>
-                            <div className="ec-historico-info">
-                                <div className="ec-historico-acao">{item.tipo_acao}</div>
-                                <div className="ec-historico-desc">{item.descricao}</div>
+            {historico.length > 0 && (
+                <section className="site-section site-shell compact-section">
+                    <SectionHeader
+                        eyebrow="Atividade recente"
+                        title={`Olá, ${user?.nome?.split(' ')[0] || 'usuário'}. Continue de onde parou.`}
+                        description="Suas últimas ações ajudam a retomar o fluxo sem transformar a Home em painel interno."
+                    />
+                    <div className="activity-strip">
+                        {historico.map((item) => (
+                            <div key={item.id}>
+                                <strong>{item.tipo_acao}</strong>
+                                <span>{item.descricao}</span>
                             </div>
-                            <div className="ec-historico-tempo">{tempoRelativo(item.data)}</div>
-                        </div>
-                    ))
-                )}
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            <div className="site-shell">
+                <CTASection
+                    title="Comece a transformar dados econômicos em decisões mais claras."
+                    description="Abra a análise para comparar séries ou siga pela educação econômica para entender os conceitos antes dos gráficos."
+                    primary={{ to: '/analise', label: 'Ver análise' }}
+                    secondary={{ to: '/educacao', label: 'Aprender conceitos' }}
+                />
             </div>
         </main>
     );

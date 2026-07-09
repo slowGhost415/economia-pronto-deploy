@@ -1,18 +1,40 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 const EconomicOrb = ({ compact = false }) => {
   const mountRef = useRef(null);
+  const loadedRef = useRef(false);
+  const [fallback, setFallback] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return undefined;
+    loadedRef.current = false;
+    setLoaded(false);
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    if (prefersReduced || isMobile) {
+      setFallback(true);
+      setLoaded(true);
+      return undefined;
+    }
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     camera.position.set(0, 0, compact ? 4.2 : 5);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch {
+      setFallback(true);
+      setLoaded(true);
+      return undefined;
+    }
+
+    setFallback(false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     mount.appendChild(renderer.domElement);
 
@@ -111,6 +133,10 @@ const EconomicOrb = ({ compact = false }) => {
         ring.rotation.x += 0.001;
       });
       renderer.render(scene, camera);
+      if (!loadedRef.current) {
+        loadedRef.current = true;
+        setLoaded(true);
+      }
       rafId = requestAnimationFrame(animate);
     };
 
@@ -124,11 +150,34 @@ const EconomicOrb = ({ compact = false }) => {
       observer.disconnect();
       renderer.dispose();
       particlesGeometry.dispose();
-      mount.removeChild(renderer.domElement);
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement);
+      }
     };
   }, [compact]);
 
-  return <div className="eco-orb" ref={mountRef} aria-hidden="true" />;
+  return (
+    <div className={`eco-orb-shell${fallback ? ' fallback' : ''}`} aria-label="Visualização abstrata de pressão econômica">
+      {!loaded && <div className="orb-skeleton" aria-hidden="true" />}
+      {fallback && (
+        <div className="orb-fallback" aria-hidden="true">
+          <div className="orb-fallback-core" />
+          <span className="orb-ring ring-one" />
+          <span className="orb-ring ring-two" />
+          <span className="orb-ring ring-three" />
+          <div className="orb-data-card top">
+            <span>Selic</span>
+            <strong>juros</strong>
+          </div>
+          <div className="orb-data-card bottom">
+            <span>IPCA</span>
+            <strong>preços</strong>
+          </div>
+        </div>
+      )}
+      <div className="eco-orb" ref={mountRef} aria-hidden="true" />
+    </div>
+  );
 };
 
 export default EconomicOrb;

@@ -37,9 +37,9 @@ const AIAssistant = () => {
         <span />
       </div>
       <div className="ai-content">
-        <span className="eyebrow">IA explicativa local</span>
-        <h2>Entenda o que cada modulo esta mostrando</h2>
-        <p>Este assistente interpreta perguntas sobre economia, impostos, graficos, investimentos e seguranca usando regras locais do proprio site.</p>
+        <span className="eyebrow">Assistente de leitura economica</span>
+        <h2>Entenda o que cada indicador revela</h2>
+        <p>Este assistente interpreta perguntas sobre economia, impostos, graficos, investimentos e seguranca com respostas locais e objetivas.</p>
 
         <div className="ai-question-row">
           <input className="ec-input" value={question} onChange={(e) => setQuestion(e.target.value)} />

@@ -8,8 +8,8 @@ const Footer = () => {
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
         { to: '/analise#graficos', label: 'Gráficos' },
-        { to: '/analise#educacao-economica', label: 'Educação Econômica' },
-        { to: '/analise#fontes-dados', label: 'Fontes dos dados' },
+        { to: '/educacao', label: 'Educação Econômica' },
+        { to: '/sobre', label: 'Sobre' },
     ];
 
     const fontes = [

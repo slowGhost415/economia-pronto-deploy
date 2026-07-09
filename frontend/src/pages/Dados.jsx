@@ -1,12 +1,33 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { carregarDadosStorage, calcularVariacaoPercentual } from '../data/dadosEconomicos';
+import { Badge, DataTable, SectionHeader } from '../components/SiteComponents';
 
 const Dados = () => {
     const [dados] = useState(() => carregarDadosStorage());
     const [filtroPeriodo, setFiltroPeriodo] = useState('');
+    const [filtroProduto, setFiltroProduto] = useState('');
+    const [filtroCategoria, setFiltroCategoria] = useState('todas');
     const [abaAtiva, setAbaAtiva] = useState('precos');
     const d = dados.dadosEconomicos;
-    const chavesOrdenadas = Object.keys(d.produtos);
+
+    useEffect(() => {
+        document.title = 'Economic | Indicadores econômicos e histórico de preços';
+        let description = document.querySelector('meta[name="description"]');
+        if (!description) {
+            description = document.createElement('meta');
+            description.setAttribute('name', 'description');
+            document.head.appendChild(description);
+        }
+        description.setAttribute('content', 'Consulte indicadores econômicos, preços mensais, variações, Selic, IPCA e histórico com filtros por período, produto e categoria.');
+    }, []);
+    const todasChaves = Object.keys(d.produtos);
+    const categorias = [...new Set(todasChaves.map(k => d.produtos[k].categoria))];
+    const chavesOrdenadas = todasChaves.filter((chave) => {
+        const produto = d.produtos[chave];
+        const categoriaOk = filtroCategoria === 'todas' || produto.categoria === filtroCategoria;
+        const produtoOk = !filtroProduto || produto.nome.toLowerCase().includes(filtroProduto.toLowerCase());
+        return categoriaOk && produtoOk;
+    });
 
     const periodosFiltrados = filtroPeriodo
         ? d.periodos.map((p, i) => ({ p, i })).filter(({ p }) => p.toLowerCase().includes(filtroPeriodo.toLowerCase()))
@@ -56,8 +77,24 @@ const Dados = () => {
     ];
 
     return (
-        <main className="ec-container">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+        <main className="site-page indicators-page">
+            <section className="site-inner-hero site-shell">
+                <Badge tone="cyan">Indicadores econômicos</Badge>
+                <h1>Dados organizados para comparar preços, inflação e juros.</h1>
+                <p>
+                    Filtre séries por período, produto e categoria. As tabelas preservam os dados
+                    existentes, mas agora têm leitura mais editorial e responsiva.
+                </p>
+            </section>
+
+            <section className="site-section site-shell compact-section">
+                <SectionHeader
+                    eyebrow="Resumo da base"
+                    title="Principais leituras do histórico disponível."
+                    description="Indicadores superiores ajudam a entender rapidamente o período antes de abrir as tabelas."
+                />
+
+            <div className="indicators-top-grid">
                 <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
                     <div className="ec-indicador-label">Selic atual</div>
                     <div className="ec-indicador-valor">{selicAtual?.toFixed(2)}%</div>
@@ -73,15 +110,15 @@ const Dados = () => {
                 <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
                     <div className="ec-indicador-label">Maior alta</div>
                     <div className="ec-indicador-valor" style={{ fontSize: '1.1rem', color: 'var(--c-danger)' }}>
-                        {maioresAltas[0]?.produto.nome}
+                        {maioresAltas[0]?.produto.nome || 'Sem produto'}
                     </div>
                     <div className="ec-indicador-sub" style={{ color: 'var(--c-danger)' }}>
-                        +{maioresAltas[0]?.perc.toFixed(1)}%
+                        {maioresAltas[0] ? `+${maioresAltas[0].perc.toFixed(1)}%` : 'Ajuste os filtros'}
                     </div>
                 </div>
                 <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
                     <div className="ec-indicador-label">Produtos monitorados</div>
-                    <div className="ec-indicador-valor">{chavesOrdenadas.length}</div>
+                    <div className="ec-indicador-valor">{todasChaves.length}</div>
                     <div className="ec-indicador-sub">{d.periodos.length} meses de histórico</div>
                 </div>
             </div>
@@ -93,27 +130,47 @@ const Dados = () => {
                     </button>
                 ))}
             </div>
+            </section>
 
             {abaAtiva === 'precos' && (
-                <div className="ec-card">
+                <section className="site-shell">
+                <div className="ec-card indicators-table-card">
                     <div className="ec-card-header">
                         <h2 style={{ margin: 0 }}>Preços Mensais</h2>
-                        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-                            <input
-                                className="ec-input"
-                                style={{ margin: 0, width: 160 }}
-                                placeholder="Filtrar período..."
-                                value={filtroPeriodo}
-                                onChange={e => setFiltroPeriodo(e.target.value)}
-                            />
-                            <button className="ec-btn ec-btn-sec" onClick={exportarCSV}>Exportar CSV</button>
-                            <button className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir</button>
+                        <div className="indicators-filters">
+                            <label>
+                                Período
+                                <input
+                                    className="ec-input"
+                                    placeholder="Ex: Jan/25"
+                                    value={filtroPeriodo}
+                                    onChange={e => setFiltroPeriodo(e.target.value)}
+                                />
+                            </label>
+                            <label>
+                                Produto
+                                <input
+                                    className="ec-input"
+                                    placeholder="Ex: arroz"
+                                    value={filtroProduto}
+                                    onChange={e => setFiltroProduto(e.target.value)}
+                                />
+                            </label>
+                            <label>
+                                Categoria
+                                <select className="ec-select" value={filtroCategoria} onChange={e => setFiltroCategoria(e.target.value)}>
+                                    <option value="todas">Todas</option>
+                                    {categorias.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                                </select>
+                            </label>
+                            <button type="button" className="ec-btn ec-btn-sec" onClick={exportarCSV}>Exportar CSV</button>
+                            <button type="button" className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir</button>
                         </div>
                     </div>
                     <p style={{ marginBottom: 16, color: 'var(--c4)', fontSize: '0.88rem' }}>
-                        Valores em R$ por período. {filtroPeriodo && <span style={{ color: 'var(--c-gold)' }}>{periodosFiltrados.length} resultado(s) filtrado(s).</span>}
+                        Valores em R$ por período. {filtroPeriodo && <span style={{ color: 'var(--c-gold)' }}>{periodosFiltrados.length} período(s) filtrado(s).</span>} {chavesOrdenadas.length !== todasChaves.length && <span style={{ color: 'var(--c-gold)' }}>{chavesOrdenadas.length} produto(s) visíveis.</span>}
                     </p>
-                    <div style={{ overflowX: 'auto' }}>
+                    <DataTable>
                         <table className="ec-table">
                             <thead>
                                 <tr>
@@ -151,12 +208,14 @@ const Dados = () => {
                                 })}
                             </tbody>
                         </table>
-                    </div>
+                    </DataTable>
                 </div>
+                </section>
             )}
 
             {abaAtiva === 'variacoes' && (
-                <div className="ec-card">
+                <section className="site-shell">
+                <div className="ec-card indicators-table-card">
                     <h2>Variações no Período</h2>
                     <p style={{ color: 'var(--c4)', fontSize: '0.88rem', marginBottom: 20 }}>
                         Comparativo entre {d.periodos[0]} e {d.periodos[d.periodos.length - 1]}.
@@ -221,10 +280,12 @@ const Dados = () => {
                         </table>
                     </div>
                 </div>
+                </section>
             )}
 
             {abaAtiva === 'selic' && (
-                <div className="ec-card">
+                <section className="site-shell">
+                <div className="ec-card indicators-table-card">
                     <h2>Selic & Inflação</h2>
                     <p style={{ color: 'var(--c4)', fontSize: '0.88rem', marginBottom: 20 }}>
                         Histórico mensal da Taxa Selic e do IPCA (fonte: Banco Central do Brasil / IBGE).
@@ -279,6 +340,7 @@ const Dados = () => {
                         </table>
                     </div>
                 </div>
+                </section>
             )}
         </main>
     );
