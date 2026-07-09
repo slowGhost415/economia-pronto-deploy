@@ -41,11 +41,11 @@ const EconomicOrb = ({ compact = false }) => {
     const core = new THREE.Mesh(
       new THREE.IcosahedronGeometry(compact ? 0.82 : 1.06, 4),
       new THREE.MeshStandardMaterial({
-        color: 0x13243a,
-        metalness: 0.45,
-        roughness: 0.34,
-        emissive: 0x071629,
-        emissiveIntensity: 0.42,
+        color: 0x17241d,
+        metalness: 0.36,
+        roughness: 0.42,
+        emissive: 0x0b1711,
+        emissiveIntensity: 0.38,
       }),
     );
     scene.add(core);
@@ -53,18 +53,18 @@ const EconomicOrb = ({ compact = false }) => {
     const wire = new THREE.Mesh(
       new THREE.IcosahedronGeometry(compact ? 0.9 : 1.16, 2),
       new THREE.MeshBasicMaterial({
-        color: 0x6ea8fe,
+        color: 0x40c48d,
         wireframe: true,
         transparent: true,
-        opacity: 0.2,
+        opacity: 0.18,
       }),
     );
     scene.add(wire);
 
     const ringMaterial = new THREE.MeshBasicMaterial({
-      color: 0xf3b23c,
+      color: 0xd7a443,
       transparent: true,
-      opacity: 0.5,
+      opacity: 0.46,
       side: THREE.DoubleSide,
     });
 
@@ -94,7 +94,7 @@ const EconomicOrb = ({ compact = false }) => {
     const particles = new THREE.Points(
       particlesGeometry,
       new THREE.PointsMaterial({
-        color: 0xd9e7ff,
+        color: 0xe8e2d3,
         size: compact ? 0.01 : 0.014,
         transparent: true,
         opacity: 0.46,
@@ -103,12 +103,12 @@ const EconomicOrb = ({ compact = false }) => {
     scene.add(particles);
 
     scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-    const blue = new THREE.PointLight(0x6ea8fe, 2.1, 12);
-    blue.position.set(3, 2, 4);
-    scene.add(blue);
-    const green = new THREE.PointLight(0x39c980, 1.4, 12);
-    green.position.set(-4, -2, 3);
-    scene.add(green);
+    const emerald = new THREE.PointLight(0x40c48d, 1.9, 12);
+    emerald.position.set(3, 2, 4);
+    scene.add(emerald);
+    const gold = new THREE.PointLight(0xd7a443, 1.25, 12);
+    gold.position.set(-4, -2, 3);
+    scene.add(gold);
 
     let frame = 0;
     let rafId = 0;

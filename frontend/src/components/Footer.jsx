@@ -4,19 +4,19 @@ const Footer = () => {
     const year = new Date().getFullYear();
 
     const links = [
-        { to: '/demo', label: 'Abrir demo' },
+        { to: '/demo', label: 'Demonstração' },
         { to: '/inicio', label: 'Início' },
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
         { to: '/simulador', label: 'Simulador' },
-        { to: '/sobre', label: 'Projeto' },
+        { to: '/sobre', label: 'Sobre' },
     ];
 
     const fontes = [
         'Banco Central do Brasil / SGS',
         'Base local de preços',
-        'PostgreSQL + Prisma para dados de usuário',
-        'Fontes oficiais planejadas no roadmap'
+        'Séries econômicas oficiais',
+        'Novas fontes em integração'
     ];
 
     return (
@@ -29,8 +29,8 @@ const Footer = () => {
                     <div>
                         <h2 id="footer-brand-title">Economic</h2>
                         <p>
-                            Projeto full stack de análise econômica com frontend React, backend Express,
-                            autenticação JWT, Prisma, PostgreSQL, gráficos e modo demonstração.
+                            Plataforma de análise econômica para acompanhar juros, inflação,
+                            preços essenciais, simulações financeiras e educação econômica.
                         </p>
                     </div>
                 </section>
@@ -43,15 +43,15 @@ const Footer = () => {
                 </nav>
 
                 <section className="ec-footer-sources" aria-labelledby="footer-sources-title">
-                    <h3 id="footer-sources-title">Fontes e stack</h3>
+                    <h3 id="footer-sources-title">Fontes de dados</h3>
                     {fontes.map((fonte) => (
                         <span key={fonte}>{fonte}</span>
                     ))}
                 </section>
 
                 <section className="ec-footer-contact" aria-labelledby="footer-contact-title">
-                    <h3 id="footer-contact-title">Uso do projeto</h3>
-                    <p>Desenvolvido como plataforma de estudo, portfolio e demonstracao tecnica.</p>
+                    <h3 id="footer-contact-title">Transparência</h3>
+                    <p>Os dados são apresentados com contexto, fonte e data sempre que disponíveis.</p>
                     <p className="ec-footer-note">
                         Dados e interpretações têm caráter informativo e não constituem recomendação
                         financeira, fiscal ou de investimento.
@@ -60,8 +60,8 @@ const Footer = () => {
             </div>
 
             <div className="ec-footer-bottom">
-                <span>© {year} Economic. Projeto de portfólio.</span>
-                <span>React + Node + Prisma + PostgreSQL + Chart.js.</span>
+                <span>© {year} Economic. Dados informativos.</span>
+                <span>Indicadores, preços, simulações e educação econômica.</span>
             </div>
         </footer>
     );

@@ -5,7 +5,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
     const location = useLocation();
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const isDashboard = user && ['/inicio', '/analise', '/dados', '/financeiro', '/simulador', '/educacao', '/sobre'].includes(location.pathname);
+    const hasAppNav = user && ['/inicio', '/analise', '/dados', '/financeiro', '/simulador', '/educacao', '/sobre'].includes(location.pathname);
 
     const navLinks = [
         { to: '/inicio', label: 'Início' },
@@ -14,7 +14,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
         { to: '/simulador', label: 'Simulador' },
         { to: '/analise#graficos', label: 'Gráficos' },
         { to: '/educacao', label: 'Educação' },
-        { to: '/sobre', label: 'Projeto' },
+        { to: '/sobre', label: 'Sobre' },
     ];
 
     useEffect(() => {
@@ -50,11 +50,11 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
                     </div>
                     <div className="ec-brand-text">
                         <strong>Economic</strong>
-                        <span>Indicadores e análise</span>
+                        <span>Análise econômica</span>
                     </div>
                 </Link>
 
-                {isDashboard && (
+                {hasAppNav && (
                     <nav className="ec-main-nav" aria-label="Navegação principal">
                         {navLinks.map(({ to, label }) => (
                             <Link
@@ -82,7 +82,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
                         <button type="button" className="ec-btn-header" onClick={onRequireAuth}>Entrar</button>
                     )}
 
-                    {isDashboard && (
+                    {hasAppNav && (
                         <button
                             type="button"
                             className="ec-hamburger"
@@ -99,7 +99,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
                 </div>
             </div>
 
-            {isDashboard && (
+            {hasAppNav && (
                 <nav
                     id="ec-mobile-nav"
                     className={`ec-mobile-nav${menuOpen ? ' open' : ''}`}

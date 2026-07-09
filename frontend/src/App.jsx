@@ -27,7 +27,7 @@ const RouteLoader = ({ title = 'Carregando módulo' }) => (
     <div className="ec-card route-loader-card">
       <span className="eyebrow">Economic</span>
       <h2>{title}</h2>
-      <p>Preparando indicadores, gráficos e componentes da interface.</p>
+      <p>Preparando indicadores e visualizações econômicas.</p>
     </div>
   </main>
 );

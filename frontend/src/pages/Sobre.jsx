@@ -10,64 +10,79 @@ import {
 
 const Sobre = () => {
     useEffect(() => {
-        document.title = 'Economic | Projeto full stack';
+        document.title = 'Economic | Sobre a plataforma';
         let description = document.querySelector('meta[name="description"]');
         if (!description) {
             description = document.createElement('meta');
             description.setAttribute('name', 'description');
             document.head.appendChild(description);
         }
-        description.setAttribute('content', 'Conheça a arquitetura do Economic: React, Vite, Node.js, Express, Prisma, PostgreSQL, JWT, dashboards econômicos e modo demonstração.');
+        description.setAttribute('content', 'Conheça o Economic: uma plataforma para acompanhar indicadores econômicos, preços, simulações financeiras, fontes de dados e educação econômica.');
     }, []);
 
     const funcoes = [
-        ['Dashboard econômico', 'Resumo de Selic, IPCA, produtos monitorados, fontes e última atualização.'],
-        ['Análise interativa', 'Filtros por período, seleção de produtos, zoom no gráfico, exportação PNG e impressão.'],
-        ['Indicadores e tabelas', 'Consultas por produto, categoria e periodo com exportacao CSV.'],
-        ['Simulador financeiro', 'Projeção de juros compostos, aportes e cenários de prazo.'],
-        ['Educação econômica', 'Glossário, conceitos e exemplos conectados ao dashboard.'],
-        ['Modo visitante', 'Avaliadores conseguem navegar sem criar conta ou depender de credenciais.']
+        ['Cenário econômico', 'Resumo de Selic, IPCA, preços monitorados, fontes e data de atualização.'],
+        ['Análise interativa', 'Filtros por período, seleção de produtos, leitura de tendências e exportação visual.'],
+        ['Indicadores e tabelas', 'Consulta de produtos, categorias, séries mensais e variações acumuladas.'],
+        ['Simulador financeiro', 'Projeção de juros compostos, aportes, prazo e comparação de cenários.'],
+        ['Educação econômica', 'Glossário, perguntas frequentes e exemplos ligados ao cotidiano.'],
+        ['Fontes e transparência', 'Separação clara entre dados disponíveis, contexto interpretativo e integrações futuras.']
     ];
 
-    const stack = [
-        ['Frontend', 'React 18, Vite, React Router, CSS responsivo e componentes reutilizáveis.'],
-        ['Backend', 'Node.js, Express, middlewares, CORS, Helmet, rate limit e rotas REST.'],
-        ['Banco', 'Prisma ORM com PostgreSQL no Render e modelos para usuários, metas, transações e investimentos.'],
-        ['Segurança', 'Autenticação JWT, rotas protegidas, validação de token e modo demo sem gravar credenciais.'],
-        ['Visualização', 'Chart.js, zoom/pan, tabelas responsivas, exportação e leitura textual do contexto.'],
-        ['Deploy', 'Render com health check, build automatizado e frontend servido pelo backend em produção.']
+    const fontes = [
+        ['Banco Central / SGS', 'Conectado', 'Séries oficiais usadas para acompanhar juros, inflação e indicadores monetários.'],
+        ['Base local de preços', 'Disponível', 'Histórico de produtos essenciais para comparar consumo, categorias e variações.'],
+        ['Câmbio, PIB e emprego', 'Em integração', 'Espaços preparados para ampliar a leitura macroeconômica sem inventar dados.'],
+        ['Atualizações', 'Monitorado', 'Cada indicador exibe fonte e data quando a informação está disponível.']
     ];
 
-        const roadmap = ['Code splitting adicional', 'Open Graph com imagem dedicada', 'Mais fontes oficiais', 'Dashboard público parcial', 'Testes automatizados', 'Relatório PDF'];
+    const proximosIndicadores = [
+        'Dólar e Euro',
+        'PIB',
+        'Desemprego',
+        'Inflação acumulada',
+        'Balança comercial',
+        'Dívida pública',
+        'Mais produtos essenciais',
+        'Relatórios de cenário'
+    ];
 
     return (
         <main className="site-page about-page">
             <section className="site-inner-hero site-shell">
-                <Badge tone="cyan">Projeto Economic</Badge>
-                <h1>Uma plataforma full stack para leitura de indicadores econômicos.</h1>
+                <Badge tone="cyan">Sobre o Economic</Badge>
+                <h1>Economia explicada com dados, contexto e impacto real.</h1>
                 <p>
-                    O projeto demonstra arquitetura web completa: interface responsiva, API, banco,
-                    autenticação, modo visitante, gráficos, filtros e páginas de educação financeira.
+                    O Economic organiza indicadores econômicos, preços essenciais, simulações e
+                    educação financeira para ajudar a entender como juros, inflação e consumo se conectam.
                 </p>
             </section>
 
             <section className="site-section site-shell split-section">
                 <SectionHeader
-                    eyebrow="Objetivo"
-                    title="Transformar dados econômicos em uma experiência de produto."
-                    description="A proposta é mostrar domínio de frontend, backend, banco, UX de dashboards e clareza de comunicação para usuários não especialistas."
+                    eyebrow="Propósito"
+                    title="Tornar indicadores econômicos mais úteis para a vida real."
+                    description="A plataforma combina dados, interpretação e linguagem simples para que a leitura econômica seja prática, confiável e fácil de revisitar."
                 />
                 <div className="mission-panel">
-                    <InsightCard title="Para recrutadores" description="O modo demo abre a plataforma sem cadastro e permite avaliar rotas, filtros, gráficos e responsividade rapidamente." tone="cyan" />
-                    <InsightCard title="Para usuários" description="Os módulos separam dados brutos, interpretação, simulação e educação para reduzir confusão na leitura econômica." tone="amber" />
+                    <InsightCard
+                        title="Para decisões do dia a dia"
+                        description="Entenda como inflação, juros e preços afetam orçamento, crédito, consumo e planejamento pessoal."
+                        tone="cyan"
+                    />
+                    <InsightCard
+                        title="Para aprender sem complicar"
+                        description="Cada seção separa indicador, fonte, explicação e impacto para evitar leitura rasa ou confusa."
+                        tone="amber"
+                    />
                 </div>
             </section>
 
             <section className="site-section site-shell">
                 <SectionHeader
-                    eyebrow="Funcionalidades"
-                    title="O que já está navegável no produto."
-                    description="Os cards abaixo são atalhos reais para áreas do site, sem elementos que parecem clicáveis mas não levam a lugar algum."
+                    eyebrow="Áreas do site"
+                    title="Uma navegação organizada por necessidade."
+                    description="Os cards abaixo levam para áreas reais do Economic, com foco em análise, consulta, simulação e aprendizado."
                 />
                 <div className="feature-grid about-feature-grid">
                     {funcoes.map(([title, description], index) => (
@@ -76,8 +91,8 @@ const Sobre = () => {
                             marker={String(index + 1).padStart(2, '0')}
                             title={title}
                             description={description}
-                            action="Abrir modulo"
-                            to={index === 0 ? '/inicio' : index === 1 ? '/analise' : index === 2 ? '/dados' : index === 3 ? '/simulador' : index === 4 ? '/educacao' : '/demo'}
+                            action="Abrir área"
+                            to={index === 0 ? '/inicio' : index === 1 ? '/analise' : index === 2 ? '/dados' : index === 3 ? '/simulador' : index === 4 ? '/educacao' : '/analise#fontes'}
                         />
                     ))}
                 </div>
@@ -85,17 +100,17 @@ const Sobre = () => {
 
             <section className="site-section site-shell">
                 <SectionHeader
-                    eyebrow="Arquitetura"
-                    title="Stack e decisões técnicas do projeto."
-                    description="A página destaca as escolhas usadas para construir o produto e facilita conversas técnicas em entrevista."
+                    eyebrow="Fontes"
+                    title="Dados com origem visível e limites claros."
+                    description="O site mostra o que está disponível, o que está em integração e onde cada indicador deve ser interpretado com cuidado."
                 />
-                <div className="source-grid tech-stack-grid">
-                    {stack.map(([title, description], index) => (
+                <div className="source-grid source-detail-grid">
+                    {fontes.map(([title, status, description], index) => (
                         <SourceStatusCard
                             key={title}
                             title={title}
-                            status={index < 4 ? 'Implementado' : 'Em uso'}
-                            tone={index % 3 === 0 ? 'cyan' : index % 3 === 1 ? 'green' : 'amber'}
+                            status={status}
+                            tone={index % 3 === 0 ? 'green' : index % 3 === 1 ? 'cyan' : 'amber'}
                             description={description}
                         />
                     ))}
@@ -104,41 +119,40 @@ const Sobre = () => {
 
             <section className="site-section site-shell about-transparency">
                 <article>
-                    <Badge tone="green">Dados e fontes</Badge>
-                    <h2>Separação clara entre dado conectado e estrutura futura.</h2>
+                    <Badge tone="green">Interpretação</Badge>
+                    <h2>O dado aparece junto do contexto.</h2>
                     <p>
-                        Selic, IPCA e a base local de preços aparecem como dados disponíveis. PIB,
-                        câmbio, desemprego e dívida pública aparecem como roadmap para não simular
-                        dados que ainda não foram integrados.
+                        Selic, IPCA e preços monitorados são apresentados com explicações curtas
+                        para diferenciar número bruto, tendência e possível impacto no orçamento.
                     </p>
                 </article>
                 <article>
                     <Badge tone="amber">Limites</Badge>
-                    <h2>O produto informa, mas não recomenda investimento.</h2>
+                    <h2>Informação econômica não é recomendação financeira.</h2>
                     <p>
-                        A leitura econômica serve como apoio educativo. O site não substitui
-                        orientação financeira, fiscal, contábil ou de investimento feita por profissional.
+                        As análises ajudam a entender o cenário, mas não substituem orientação
+                        profissional financeira, fiscal, contábil ou de investimento.
                     </p>
                 </article>
             </section>
 
             <section className="site-section site-shell">
                 <SectionHeader
-                    eyebrow="Roadmap"
-                    title="Próximas melhorias planejadas."
-                    description="A evolução prioriza performance, fontes oficiais, compartilhamento profissional e relatórios."
+                    eyebrow="Próximas integrações"
+                    title="Novos indicadores para ampliar a leitura do cenário."
+                    description="A estrutura já prevê indicadores adicionais, mas eles só aparecem como dado ativo quando houver fonte confiável disponível."
                 />
                 <div className="roadmap-grid">
-                    {roadmap.map((item) => <span key={item}>{item}</span>)}
+                    {proximosIndicadores.map((item) => <span key={item}>{item}</span>)}
                 </div>
             </section>
 
             <div className="site-shell">
                 <CTASection
-                    title="Abra a demonstração ou veja a análise principal."
-                    description="O fluxo de avaliação recomendado é: demo, análise, indicadores, simulador e página do projeto."
-                    primary={{ to: '/demo', label: 'Abrir demo' }}
-                    secondary={{ to: '/analise', label: 'Ver análise' }}
+                    title="Comece pela análise principal ou explore os conceitos."
+                    description="Compare indicadores, leia o resumo do cenário e use a educação econômica para entender cada conceito antes de interpretar os números."
+                    primary={{ to: '/analise', label: 'Ver análise' }}
+                    secondary={{ to: '/educacao', label: 'Aprender conceitos' }}
                 />
             </div>
         </main>

@@ -44,14 +44,14 @@ const Inicio = ({ user }) => {
     const [focoAtivo, setFocoAtivo] = useState('consumo');
 
     useEffect(() => {
-        document.title = 'Economic | Dashboard economico full stack';
+        document.title = 'Economic | Indicadores econômicos, preços e simulações';
         let description = document.querySelector('meta[name="description"]');
         if (!description) {
             description = document.createElement('meta');
             description.setAttribute('name', 'description');
             document.head.appendChild(description);
         }
-        description.setAttribute('content', 'Economic e um dashboard full stack com React, Node, Prisma, PostgreSQL, indicadores economicos, graficos, filtros, simulacoes e modo demonstracao.');
+        description.setAttribute('content', 'Economic reúne indicadores econômicos, preços essenciais, simulações financeiras e educação econômica em uma leitura clara e interativa.');
         const d = carregarDadosStorage();
         setDados(d);
         Promise.all([
@@ -190,11 +190,11 @@ const Inicio = ({ user }) => {
         <main className="site-page home-page">
             <section className="home-hero site-shell">
                 <div className="home-hero-copy">
-                    <Badge tone="cyan">Dashboard econômico full stack</Badge>
-                    <h1>Indicadores, preços e simulações em uma plataforma navegável.</h1>
+                    <Badge tone="cyan">Análise econômica aplicada</Badge>
+                    <h1>Entenda juros, inflação e preços em uma leitura clara.</h1>
                     <p>
-                        Projeto com React, Node, Prisma, PostgreSQL, autenticação JWT, gráficos,
-                        filtros e modo visitante para avaliação rápida pelo currículo.
+                        Compare Selic, IPCA, produtos essenciais e cenários financeiros com
+                        contexto, fontes e explicações simples para decisões mais conscientes.
                     </p>
                     <div className="hero-actions">
                         <button type="button" className="ec-btn" onClick={() => registrarAcao('analise', 'Começou análise pela Home', '/analise')}>
@@ -222,22 +222,22 @@ const Inicio = ({ user }) => {
                 <aside className="home-visual-panel" aria-label="Painel de sinais econômicos">
                     <div className="visual-panel-glass">
                         <div className="visual-panel-head">
-                            <span>Visão do sistema</span>
-                            <strong>Dados, contexto e decisão</strong>
+                            <span>Cenário econômico</span>
+                            <strong>Juros, preços e consumo</strong>
                         </div>
                         <div className="orb-stage">
                             <EconomicOrb />
                         </div>
                         <div className="visual-panel-overlay">
-                            <span>Arquitetura aplicada</span>
-                            <strong>Frontend responsivo, API Express e banco relacional</strong>
+                            <span>Leitura do momento</span>
+                            <strong>Indicadores, tendências e impacto no orçamento</strong>
                         </div>
                         <div className="market-signal-grid">
-                            <div className="floating-dashboard-card">
+                            <div className="floating-signal-card">
                                 <span>Selic x IPCA</span>
                                 <MiniTrend values={selicHist} />
                             </div>
-                            <div className="floating-dashboard-card bottom">
+                            <div className="floating-signal-card bottom">
                                 <span>Poder de compra</span>
                                 <MiniTrend values={ipcaHist} tone="amber" />
                             </div>
@@ -336,14 +336,14 @@ const Inicio = ({ user }) => {
 
             <section className="site-section site-shell">
                 <SectionHeader
-                    eyebrow="Painel demonstrativo"
-                    title="Um preview do dashboard com sinais de mercado."
+                    eyebrow="Visão rápida"
+                    title="Um retrato dos principais sinais econômicos."
                     description="A visão combina indicadores, tendência e interpretação para mostrar contexto antes da análise completa."
                 >
                     <Link className="ec-btn ec-btn-outline" to="/analise#graficos">Ver gráficos</Link>
                 </SectionHeader>
 
-                <div className="dashboard-preview">
+                <div className="market-preview">
                     <div className="preview-main-chart">
                         <div className="preview-chart-head">
                             <span>Comparativo econômico</span>
@@ -356,7 +356,7 @@ const Inicio = ({ user }) => {
                         </div>
                         <p>Preços usam eixo de valores; Selic e IPCA entram como pressão macroeconômica para leitura do consumo.</p>
                     </div>
-                    <div className="preview-side-stack">
+                    <div className="preview-side-list">
                         <MetricCard label="Produtos" value={produtosCount || 0} meta="alimentos, combustíveis e serviços" />
                         <MetricCard
                             label="Dólar PTAX"

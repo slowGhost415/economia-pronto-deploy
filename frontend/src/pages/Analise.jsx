@@ -36,9 +36,9 @@ const periodHighlightPlugin = {
         const startX = scales.x.getPixelForValue(startIndex);
         const endX = chartArea.right;
         ctx.save();
-        ctx.fillStyle = 'rgba(110, 168, 254, 0.055)';
+        ctx.fillStyle = 'rgba(64, 196, 141, 0.055)';
         ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.bottom - chartArea.top);
-        ctx.strokeStyle = 'rgba(110, 168, 254, 0.18)';
+        ctx.strokeStyle = 'rgba(64, 196, 141, 0.18)';
         ctx.setLineDash([4, 6]);
         ctx.beginPath();
         ctx.moveTo(startX, chartArea.top);
@@ -214,7 +214,7 @@ const Analise = () => {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     pointBackgroundColor: produto.cor,
-                    pointBorderColor: '#08111f',
+                    pointBorderColor: '#0d1110',
                     pointBorderWidth: 2
                 });
             });
@@ -224,14 +224,14 @@ const Analise = () => {
             datasets.push({
                 label: 'Selic (%)',
                 data: d.selic.slice(range.start, range.end),
-                borderColor: '#6ea8fe',
-                backgroundColor: 'rgba(110,168,254,0.14)',
+                borderColor: '#40c48d',
+                backgroundColor: 'rgba(64,196,141,0.14)',
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
                 borderWidth: 3,
-                pointBackgroundColor: '#6ea8fe',
-                pointBorderColor: '#08111f',
+                pointBackgroundColor: '#40c48d',
+                pointBorderColor: '#0d1110',
                 pointBorderWidth: 2,
                 borderDash: [6, 4]
             });
@@ -241,14 +241,14 @@ const Analise = () => {
             datasets.push({
                 label: 'Inflação (IPCA)',
                 data: d.inflacao.slice(range.start, range.end),
-                borderColor: '#f3b23c',
-                backgroundColor: 'rgba(243,178,60,0.14)',
+                borderColor: '#d7a443',
+                backgroundColor: 'rgba(215,164,67,0.14)',
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
                 borderWidth: 3,
-                pointBackgroundColor: '#f3b23c',
-                pointBorderColor: '#08111f',
+                pointBackgroundColor: '#d7a443',
+                pointBorderColor: '#0d1110',
                 pointBorderWidth: 2,
                 borderDash: [4, 4]
             });
@@ -269,7 +269,7 @@ const Analise = () => {
                     legend: {
                         position: 'top',
                         labels: {
-                            color: '#d7e2ee',
+                            color: '#e8e2d3',
                             usePointStyle: true,
                             padding: 18,
                             boxWidth: 10,
@@ -280,18 +280,18 @@ const Analise = () => {
                     title: {
                         display: true,
                         text: 'Preços, Selic e IPCA no período selecionado',
-                        color: '#edf3f8',
+                        color: '#f3efe5',
                         padding: { bottom: 18 },
                         font: { size: 18, weight: 'bold' }
                     },
                     tooltip: {
                         mode: 'index',
                         intersect: false,
-                        backgroundColor: 'rgba(8, 17, 31, 0.97)',
-                        borderColor: 'rgba(110, 168, 254, 0.28)',
+                        backgroundColor: 'rgba(13, 17, 16, 0.97)',
+                        borderColor: 'rgba(64, 196, 141, 0.28)',
                         borderWidth: 1,
-                        titleColor: '#edf3f8',
-                        bodyColor: '#d7e2ee',
+                        titleColor: '#f3efe5',
+                        bodyColor: '#e8e2d3',
                         padding: 12,
                         callbacks: {
                             label: ctx => {
@@ -862,7 +862,7 @@ const Analise = () => {
             </section>
 
             <div className="ec-card analise-config-card">
-                <h2>Montagem da análise</h2>
+                <h2>Configuração da análise</h2>
 
                 <p>Defina quais variáveis entram no gráfico e quais produtos serão comparados.</p>
                 <div className="ec-flex">
@@ -881,7 +881,7 @@ const Analise = () => {
                             <option value="3">Últimos 3 meses</option>
                             <option value="all">Todo histórico</option>
                         </select>
-                        <button type="button" className="ec-btn" onClick={handleAtualizarAPI}>Atualizar dados (API)</button>
+                        <button type="button" className="ec-btn" onClick={handleAtualizarAPI}>Atualizar dados oficiais</button>
                         <div style={{ marginTop: 10, fontSize: '0.9em', color: 'var(--c3)' }}>
                             <span>Última atualização: </span><span>{dataAtualizacao || '-'}</span>
                         </div>
@@ -1049,7 +1049,7 @@ const Analise = () => {
                     </div>
                 </div>
                 <p className="analise-chart-note">
-                    Use a legenda para identificar cada série. Preços usam o eixo da esquerda; Selic e IPCA usam o eixo da direita. A faixa azul destaca o recorte mais recente.
+                    Use a legenda para identificar cada série. Preços usam o eixo da esquerda; Selic e IPCA usam o eixo da direita. A faixa em destaque marca o recorte mais recente.
                 </p>
                 <div className="analise-chart-insights" aria-label="Resumo do grafico">
                     {chartReadingCards.map((item) => (
@@ -1269,8 +1269,8 @@ const Analise = () => {
                         <span>Última atualização registrada</span>
                         <strong>{dataAtualizacao || '-'}</strong>
                         <p>
-                            A atualização depende da base local e da API já existente. Nenhuma nova
-                            chamada externa foi adicionada nesta etapa visual.
+                            A atualização usa as fontes já disponíveis e mantém a distinção entre
+                            dados carregados, base local e integrações futuras.
                         </p>
                     </div>
                 </article>

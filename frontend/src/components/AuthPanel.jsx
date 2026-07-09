@@ -23,34 +23,34 @@ const AuthPanel = ({ onLogin, onSignup, onDemo, loading }) => {
     return (
         <div className="auth-page">
             <section className="auth-showcase" aria-labelledby="auth-showcase-title">
-                <span className="site-eyebrow">Projeto full stack para portfólio</span>
-                <h1 id="auth-showcase-title">Dashboard econômico com dados, autenticação e análise visual.</h1>
+                <span className="site-eyebrow">Análise econômica para o dia a dia</span>
+                <h1 id="auth-showcase-title">Entenda juros, inflação e preços com uma leitura clara.</h1>
                 <p>
-                    Plataforma construída com React, Vite, Node.js, Express, Prisma e PostgreSQL
-                    para consultar indicadores, comparar séries, simular cenários e explicar conceitos econômicos.
+                    Acompanhe indicadores, compare produtos essenciais, simule cenários financeiros
+                    e aprenda conceitos econômicos em uma experiência objetiva.
                 </p>
 
-                <div className="auth-stack-grid" aria-label="Tecnologias e módulos do projeto">
-                    <span>React 18</span>
-                    <span>Node + Express</span>
-                    <span>Prisma ORM</span>
-                    <span>PostgreSQL</span>
-                    <span>JWT Auth</span>
-                    <span>Chart.js</span>
+                <div className="auth-area-grid" aria-label="Áreas disponíveis na plataforma">
+                    <span>Selic</span>
+                    <span>IPCA</span>
+                    <span>Preços</span>
+                    <span>Simulações</span>
+                    <span>Educação</span>
+                    <span>Fontes</span>
                 </div>
 
                 <div className="auth-proof-grid">
                     <article>
-                        <strong>Rotas protegidas</strong>
-                        <span>Conta real ou modo visitante para avaliação rápida.</span>
+                        <strong>Acesso rápido</strong>
+                        <span>Entre com conta própria ou navegue em uma demonstração.</span>
                     </article>
                     <article>
                         <strong>Dados econômicos</strong>
                         <span>Selic, IPCA, preços locais, filtros e exportação.</span>
                     </article>
                     <article>
-                        <strong>Produto navegavel</strong>
-                        <span>Dashboard, educação, simulações e página técnica do projeto.</span>
+                        <strong>Leitura guiada</strong>
+                        <span>Análises, educação, simulações e fontes em uma navegação simples.</span>
                     </article>
                 </div>
             </section>
@@ -66,10 +66,10 @@ const AuthPanel = ({ onLogin, onSignup, onDemo, loading }) => {
                     </div>
                 </div>
 
-                <h2 className="auth-title">{isLogin ? 'Acessar plataforma' : 'Criar conta'}</h2>
+                <h2 className="auth-title">{isLogin ? 'Acessar Economic' : 'Criar conta'}</h2>
                 <p className="auth-subtitle">
                     {isLogin
-                        ? 'Entre com sua conta ou use a demonstração para avaliar o projeto sem cadastro.'
+                        ? 'Entre com sua conta ou acesse uma demonstração sem cadastro.'
                         : 'Cadastre-se para acessar todos os recursos da plataforma.'}
                 </p>
 
@@ -142,7 +142,7 @@ const AuthPanel = ({ onLogin, onSignup, onDemo, loading }) => {
 
                     {isLogin && (
                         <button type="button" className="auth-demo-btn" onClick={onDemo}>
-                            Ver demonstração sem cadastro
+                            Acessar demonstração
                         </button>
                     )}
                 </form>
@@ -159,7 +159,7 @@ const AuthPanel = ({ onLogin, onSignup, onDemo, loading }) => {
                 </div>
 
                 <p className="auth-render-note">
-                    No Render gratuito, a primeira abertura pode levar alguns segundos enquanto o serviço inicia.
+                    A demonstração usa dados informativos e permite conhecer as principais áreas do site.
                 </p>
             </div>
         </div>
