@@ -1,7 +1,7 @@
 # Economia Backend
 
 - Express + Node.js
-- SQLite + Prisma
+- PostgreSQL + Prisma
 - JWT auth
 
 ## Setup
@@ -9,8 +9,9 @@
 1. `cd backend`
 2. `npm install`
 3. `npm run prisma:generate`
-4. `npm run prisma:migrate`
-5. `npm run dev`
+4. Configure `DATABASE_URL` e `JWT_SECRET` no `.env`
+5. `npm run db:push`
+6. `npm run dev`
 
 ## Endpoints
 

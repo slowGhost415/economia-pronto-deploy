@@ -2,6 +2,12 @@
 
 Este projeto esta pronto para subir no Render usando o arquivo `render.yaml` da raiz.
 
+## Solucao rapida para colocar no ar agora
+
+Use o Render Blueprint. Nao use Vercel sozinho para este projeto, porque o
+`vercel.json` publica apenas o frontend estatico. O app tambem precisa do
+backend Express, Prisma e PostgreSQL para login, cadastro e dados do usuario.
+
 ## O que sera criado
 
 - 1 banco Postgres: `economia-db`
@@ -24,6 +30,9 @@ Assim o frontend usa `/api` no mesmo dominio em producao, sem depender de URL fi
 
 O Render vai criar o banco, instalar dependencias, gerar o Prisma Client, montar as tabelas com `prisma db push`, compilar o React e iniciar o servidor.
 
+Na primeira publicacao, aguarde ate o deploy terminar e abra a URL `onrender.com`
+do servico `economia-site`.
+
 ## Variaveis de ambiente
 
 O `render.yaml` ja configura automaticamente:
@@ -33,6 +42,13 @@ O `render.yaml` ja configura automaticamente:
 - `NODE_ENV`: `production`
 
 Voce so precisa adicionar variaveis manualmente se for usar outro dominio ou separar frontend/backend.
+
+## Importante sobre o plano gratis
+
+O plano gratis do Render serve para colocar no ar e testar. O Web Service pode
+demorar cerca de um minuto para acordar quando fica sem visitas, e o Postgres
+gratis expira depois de 30 dias. Para deixar o projeto definitivo, troque o
+banco para um plano pago antes desse prazo.
 
 ## Validacao
 
