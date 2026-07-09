@@ -50,6 +50,20 @@ const Analise = () => {
     const [analiseText, setAnaliseText] = useState('');
     const [dataAtualizacao, setDataAtualizacao] = useState('');
 
+    useEffect(() => {
+        document.title = 'Economic | Análise econômica, Selic, inflação e indicadores';
+        let description = document.querySelector('meta[name="description"]');
+        if (!description) {
+            description = document.createElement('meta');
+            description.setAttribute('name', 'description');
+            document.head.appendChild(description);
+        }
+        description.setAttribute(
+            'content',
+            'Página de análise econômica com Selic, IPCA, inflação, preços, indicadores, gráficos, fontes e interpretação do cenário brasileiro.'
+        );
+    }, []);
+
     const getPeriodoRange = useCallback((d) => {
         const total = d.dadosEconomicos.periodos.length;
         if (periodo === 'all') return { start: 0, end: total };
@@ -652,7 +666,7 @@ const Analise = () => {
     const linhasInterpretacaoAnalise = linhasAnalise.filter(linha => !linhasDadosAnalise.includes(linha));
 
     return (
-        <main className="ec-container analise-page">
+        <main id="conteudo-principal" className="ec-container analise-page">
             <section className="analise-hero">
                 <div className="analise-hero-copy">
                     <span className="eyebrow">Painel de inteligência econômica</span>
@@ -679,7 +693,7 @@ const Analise = () => {
                 </div>
             </section>
 
-            <section className="analise-section-heading">
+            <section id="indicadores" className="analise-section-heading">
                 <div>
                     <span className="eyebrow">Indicadores principais</span>
                     <h2>Leitura rápida do cenário atual</h2>
@@ -793,13 +807,14 @@ const Analise = () => {
                     </div>
                     <div className="ec-flex-item">
                         <h3>Período</h3>
-                        <select className="ec-select" value={periodo} onChange={e => setPeriodo(e.target.value)}>
+                        <label className="analise-field-label" htmlFor="analise-periodo">Período analisado</label>
+                        <select id="analise-periodo" className="ec-select" value={periodo} onChange={e => setPeriodo(e.target.value)}>
                             <option value="12">Últimos 12 meses</option>
                             <option value="6">Últimos 6 meses</option>
                             <option value="3">Últimos 3 meses</option>
                             <option value="all">Todo histórico</option>
                         </select>
-                        <button className="ec-btn" onClick={handleAtualizarAPI}>Atualizar dados (API)</button>
+                        <button type="button" className="ec-btn" onClick={handleAtualizarAPI}>Atualizar dados (API)</button>
                         <div style={{ marginTop: 10, fontSize: '0.9em', color: 'var(--c3)' }}>
                             <span>Última atualização: </span><span>{dataAtualizacao || '-'}</span>
                         </div>
@@ -814,8 +829,10 @@ const Analise = () => {
                 <div style={{ position: 'relative', marginBottom: 20 }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                         <div style={{ position: 'relative', flex: '1 1 260px' }}>
-                            <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--c3)', fontSize: '1rem', pointerEvents: 'none' }}>🔍</div>
+                            <label className="analise-field-label" htmlFor="analise-busca-produto">Buscar produto</label>
+                            <div aria-hidden="true" style={{ position: 'absolute', left: 14, bottom: 14, color: 'var(--c3)', fontSize: '1rem', pointerEvents: 'none' }}>⌕</div>
                             <input
+                                id="analise-busca-produto"
                                 ref={inputBuscaRef}
                                 type="text"
                                 className="ec-input"
@@ -832,11 +849,11 @@ const Analise = () => {
                                 autoComplete="off"
                             />
                             {busca && (
-                                <button onClick={() => { setBusca(''); setResultadosBusca([]); }} style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--c3)', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}>✕</button>
+                                <button type="button" aria-label="Limpar busca" onClick={() => { setBusca(''); setResultadosBusca([]); }} style={{ position: 'absolute', right: 12, bottom: 9, background: 'none', border: 'none', color: 'var(--c3)', cursor: 'pointer', fontSize: '1rem', lineHeight: 1, minWidth: 38, minHeight: 38 }}>×</button>
                             )}
                         </div>
-                        <button className="ec-btn ec-btn-sec" onClick={() => { setSelecao(obterProdutos().map(p => p.chave)); }}>Todos</button>
-                        <button className="ec-btn ec-btn-sec" onClick={() => setSelecao([])}>Limpar</button>
+                        <button type="button" className="ec-btn ec-btn-sec" onClick={() => { setSelecao(obterProdutos().map(p => p.chave)); }}>Todos</button>
+                        <button type="button" className="ec-btn ec-btn-sec" onClick={() => setSelecao([])}>Limpar</button>
                     </div>
 
                     {buscaFocada && resultadosBusca.length > 0 && (
@@ -847,7 +864,12 @@ const Analise = () => {
                                 const fim = prod.dados[prod.dados.length - 1];
                                 const perc = ini ? (((fim - ini) / ini) * 100) : 0;
                                 return (
-                                    <div key={prod.chave} onMouseDown={() => selecionarResultado(prod)}
+                                    <button
+                                        type="button"
+                                        key={prod.chave}
+                                        className="analise-search-result"
+                                        onMouseDown={(event) => event.preventDefault()}
+                                        onClick={() => selecionarResultado(prod)}
                                         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', cursor: 'pointer', borderBottom: i < resultadosBusca.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', background: jaAtivo ? 'rgba(155,168,171,0.06)' : 'transparent', transition: 'background 0.15s' }}
                                         onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                                         onMouseLeave={e => e.currentTarget.style.background = jaAtivo ? 'rgba(155,168,171,0.06)' : 'transparent'}
@@ -864,7 +886,7 @@ const Analise = () => {
                                         <div style={{ fontSize: '0.75rem', color: jaAtivo ? 'var(--c-success)' : 'var(--c3)', flexShrink: 0, width: 60, textAlign: 'right' }}>
                                             {jaAtivo ? '✓ ativo' : '+ adicionar'}
                                         </div>
-                                    </div>
+                                    </button>
                                 );
                             })}
                         </div>
@@ -887,7 +909,15 @@ const Analise = () => {
                             <span key={chave} className="analise-selected-chip" style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 10px', background: 'rgba(255,255,255,0.06)', border: `1px solid ${prod.cor}55`, borderRadius: 99, fontSize: '0.78rem', color: 'var(--c5)' }}>
                                 <span style={{ width: 7, height: 7, borderRadius: '50%', background: prod.cor, display: 'inline-block' }} />
                                 {prod.nome}
-                                <button className="analise-chip-remove" onClick={() => setSelecao(prev => prev.filter(x => x !== chave))} style={{ background: 'none', border: 'none', color: 'var(--c3)', cursor: 'pointer', fontSize: '0.8rem', padding: 0, lineHeight: 1, marginLeft: 2 }}>✕</button>
+                                <button
+                                    type="button"
+                                    className="analise-chip-remove"
+                                    aria-label={`Remover ${prod.nome} da seleção`}
+                                    onClick={() => setSelecao(prev => prev.filter(x => x !== chave))}
+                                    style={{ background: 'none', border: 'none', color: 'var(--c3)', cursor: 'pointer', fontSize: '0.8rem', padding: 0, lineHeight: 1, marginLeft: 2 }}
+                                >
+                                    ×
+                                </button>
                             </span>
                         );
                     })}
@@ -917,7 +947,7 @@ const Analise = () => {
                                         <span style={{ flex: 1 }}>{prod.nome}</span>
                                         {ativo && (
                                             <span style={{ fontSize: '0.72rem', color: perc >= 0 ? 'var(--c-danger)' : 'var(--c-success)', fontWeight: 700, marginLeft: 'auto' }}>
-                                                {perc >= 0 ? '+' : ''}{perc.toFixed(1)}%
+                                                {perc >= 0 ? 'Alta ' : 'Queda '}{perc >= 0 ? '+' : ''}{perc.toFixed(1)}%
                                             </span>
                                         )}
                                     </label>
@@ -928,20 +958,26 @@ const Analise = () => {
                 </div>
             </div>
 
-            <div className="ec-card analise-chart-card">
+            <div id="graficos" className="ec-card analise-chart-card">
                 <div className="analise-chart-header">
                     <div>
                         <h2>Gráfico Interativo</h2>
                         <p>Compare a evolução dos preços selecionados com Selic e IPCA no período escolhido.</p>
                     </div>
                     <div className="ec-chart-actions">
-                        <button className="ec-btn ec-btn-sec" onClick={exportarPNG}>Exportar PNG</button>
-                        <button className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir relatório</button>
+                        <button type="button" className="ec-btn ec-btn-sec" onClick={exportarPNG}>Exportar PNG</button>
+                        <button type="button" className="ec-btn ec-btn-sec" onClick={() => window.print()}>Imprimir relatório</button>
                     </div>
                 </div>
                 <div className="ec-chart-container analise-chart-scroll">
                     <div className="analise-chart-frame">
-                        <canvas ref={canvasRef}></canvas>
+                        <canvas
+                            ref={canvasRef}
+                            role="img"
+                            aria-label="Gráfico de linhas comparando preços selecionados, taxa Selic e inflação IPCA no período escolhido."
+                        >
+                            Gráfico de linhas com preços selecionados, taxa Selic e inflação IPCA.
+                        </canvas>
                     </div>
                 </div>
                 <p className="analise-chart-note">
@@ -955,14 +991,14 @@ const Analise = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginTop: 16 }}>
                     <div>
-                        <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--c5)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Produto A</label>
-                        <select className="ec-select" value={prodA} onChange={e => setProdA(e.target.value)}>
+                        <label className="analise-field-label" htmlFor="analise-produto-a">Produto A</label>
+                        <select id="analise-produto-a" className="ec-select" value={prodA} onChange={e => setProdA(e.target.value)}>
                             {produtos.map(p => <option key={p.chave} value={p.chave}>{p.nome}</option>)}
                         </select>
                     </div>
                     <div>
-                        <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--c5)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Produto B</label>
-                        <select className="ec-select" value={prodB} onChange={e => setProdB(e.target.value)}>
+                        <label className="analise-field-label" htmlFor="analise-produto-b">Produto B</label>
+                        <select id="analise-produto-b" className="ec-select" value={prodB} onChange={e => setProdB(e.target.value)}>
                             {produtos.map(p => <option key={p.chave} value={p.chave}>{p.nome}</option>)}
                         </select>
                     </div>
@@ -984,7 +1020,7 @@ const Analise = () => {
                                     R$ {comparacaoInfo.fimA.toFixed(2)}
                                 </div>
                                 <div className="ec-indicador-sub" style={{ color: comparacaoInfo.varA >= 0 ? 'var(--c-success)' : 'var(--c-danger)' }}>
-                                    {comparacaoInfo.varA >= 0 ? '+' : ''}{comparacaoInfo.varA.toFixed(1)}% no período
+                                    {comparacaoInfo.varA >= 0 ? 'Alta ' : 'Queda '}{comparacaoInfo.varA >= 0 ? '+' : ''}{comparacaoInfo.varA.toFixed(1)}% no período
                                 </div>
                             </div>
                             <div className="ec-indicador-card analise-comparison-stat" style={{ padding: '18px 20px' }}>
@@ -993,7 +1029,7 @@ const Analise = () => {
                                     R$ {comparacaoInfo.fimB.toFixed(2)}
                                 </div>
                                 <div className="ec-indicador-sub" style={{ color: comparacaoInfo.varB >= 0 ? 'var(--c-success)' : 'var(--c-danger)' }}>
-                                    {comparacaoInfo.varB >= 0 ? '+' : ''}{comparacaoInfo.varB.toFixed(1)}% no período
+                                    {comparacaoInfo.varB >= 0 ? 'Alta ' : 'Queda '}{comparacaoInfo.varB >= 0 ? '+' : ''}{comparacaoInfo.varB.toFixed(1)}% no período
                                 </div>
                             </div>
                         </div>
@@ -1114,7 +1150,7 @@ const Analise = () => {
             </section>
 
             <section className="analise-knowledge-section">
-                <article className="ec-card analise-glossary-card">
+                <article id="educacao-economica" className="ec-card analise-glossary-card">
                     <span className="eyebrow">Glossário econômico</span>
                     <h2>Economia explicada sem perder profundidade</h2>
                     <p>
@@ -1132,7 +1168,7 @@ const Analise = () => {
                     </div>
                 </article>
 
-                <article className="ec-card analise-sources-card">
+                <article id="fontes-dados" className="ec-card analise-sources-card">
                     <span className="eyebrow">Fontes dos dados</span>
                     <h2>Origem, cobertura e atualização</h2>
                     <p>

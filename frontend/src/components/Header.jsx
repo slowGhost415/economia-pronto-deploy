@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Header = ({ user, onLogout, onRequireAuth }) => {
@@ -9,11 +9,32 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
 
     const navLinks = [
         { to: '/inicio', label: 'Início' },
-        { to: '/analise', label: 'Análise' },
-        { to: '/dados', label: 'Dados' },
-        { to: '/financeiro', label: 'Financeiro' },
-        { to: '/simulador', label: 'Simulador' },
+        { to: '/analise', label: 'Análises' },
+        { to: '/dados', label: 'Indicadores' },
+        { to: '/analise#graficos', label: 'Gráficos' },
+        { to: '/analise#educacao-economica', label: 'Educação Econômica' },
+        { to: '/analise#sobre-site', label: 'Sobre' },
     ];
+
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [location.pathname, location.hash]);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+        const closeOnEscape = (event) => {
+            if (event.key === 'Escape') setMenuOpen(false);
+        };
+        window.addEventListener('keydown', closeOnEscape);
+        return () => window.removeEventListener('keydown', closeOnEscape);
+    }, [menuOpen]);
+
+    const isActiveLink = (to) => {
+        const [path, hash = ''] = to.split('#');
+        const targetHash = hash ? `#${hash}` : '';
+        if (targetHash) return location.pathname === path && location.hash === targetHash;
+        return location.pathname === path && !location.hash;
+    };
 
     const initials = user?.nome
         ? user.nome.split(' ').slice(0, 2).map(n => n[0].toUpperCase()).join('')
@@ -22,23 +43,24 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
     return (
         <header className="ec-header">
             <div className="ec-header-inner">
-                <Link to={user ? '/inicio' : '/'} className="ec-brand">
+                <Link to={user ? '/inicio' : '/'} className="ec-brand" aria-label="Economic, ir para o início">
                     <div className="ec-brand-icon">
-                        <span style={{ fontSize: '1.1rem' }}>&#128200;</span>
+                        <span aria-hidden="true" style={{ fontSize: '1.1rem' }}>&#128200;</span>
                     </div>
                     <div className="ec-brand-text">
-                        <h1>Economic</h1>
+                        <strong>Economic</strong>
                         <span>Análise macroeconômica</span>
                     </div>
                 </Link>
 
                 {isDashboard && (
-                    <nav className="ec-main-nav">
+                    <nav className="ec-main-nav" aria-label="Navegação principal">
                         {navLinks.map(({ to, label }) => (
                             <Link
                                 key={to}
                                 to={to}
-                                className={`ec-nav-link${location.pathname === to ? ' active' : ''}`}
+                                className={`ec-nav-link${isActiveLink(to) ? ' active' : ''}`}
+                                aria-current={isActiveLink(to) ? 'page' : undefined}
                             >
                                 {label}
                             </Link>
@@ -50,20 +72,23 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
                     {user ? (
                         <>
                             <div className="ec-user-chip">
-                                <div className="ec-user-avatar">{initials}</div>
+                                <div className="ec-user-avatar" aria-hidden="true">{initials}</div>
                                 <span>{user.nome.split(' ')[0]}</span>
                             </div>
-                            <button className="ec-btn-header" onClick={onLogout}>Sair</button>
+                            <button type="button" className="ec-btn-header" onClick={onLogout}>Sair</button>
                         </>
                     ) : (
-                        <button className="ec-btn-header" onClick={onRequireAuth}>Entrar</button>
+                        <button type="button" className="ec-btn-header" onClick={onRequireAuth}>Entrar</button>
                     )}
 
                     {isDashboard && (
                         <button
+                            type="button"
                             className="ec-hamburger"
                             onClick={() => setMenuOpen(v => !v)}
-                            aria-label="Menu"
+                            aria-label="Abrir menu de navegação"
+                            aria-expanded={menuOpen}
+                            aria-controls="ec-mobile-nav"
                         >
                             <span></span>
                             <span></span>
@@ -74,18 +99,24 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
             </div>
 
             {isDashboard && (
-                <div className={`ec-mobile-nav${menuOpen ? ' open' : ''}`}>
+                <nav
+                    id="ec-mobile-nav"
+                    className={`ec-mobile-nav${menuOpen ? ' open' : ''}`}
+                    aria-label="Navegação principal no celular"
+                    hidden={!menuOpen}
+                >
                     {navLinks.map(({ to, label }) => (
                         <Link
                             key={to}
                             to={to}
-                            className={`ec-nav-link${location.pathname === to ? ' active' : ''}`}
+                            className={`ec-nav-link${isActiveLink(to) ? ' active' : ''}`}
+                            aria-current={isActiveLink(to) ? 'page' : undefined}
                             onClick={() => setMenuOpen(false)}
                         >
                             {label}
                         </Link>
                     ))}
-                </div>
+                </nav>
             )}
         </header>
     );

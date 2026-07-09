@@ -17,11 +17,20 @@
   --amber-soft: rgba(255, 183, 3, 0.14);
   --green: #40d88a;
   --red: #ff5d73;
+  --c1: var(--surface);
+  --c2: var(--surface-2);
+  --c3: #aebccd;
+  --c4: #c3d0df;
+  --c5: var(--text);
+  --c-success: var(--green);
+  --c-danger: var(--red);
+  --c-gold: var(--amber);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-xl: 28px;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.3);
   --font: 'Inter', 'Segoe UI', sans-serif;
 }
 
@@ -60,8 +69,24 @@ button {
   letter-spacing: 0;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+[id] {
+  scroll-margin-top: 96px;
+}
+
 .app-container {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .toast {
@@ -99,7 +124,7 @@ button {
 }
 
 .ec-header-inner {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1320px, calc(100% - 32px));
   height: 74px;
   margin: 0 auto;
   display: flex;
@@ -112,7 +137,7 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 190px;
+  min-width: 178px;
   color: inherit;
   text-decoration: none;
 }
@@ -134,8 +159,9 @@ button {
   border-radius: 14px;
 }
 
-.ec-brand-text h1,
+.ec-brand-text strong,
 .auth-logo-text h2 {
+  display: block;
   margin: 0;
   font-size: 1rem;
   line-height: 1.1;
@@ -149,8 +175,10 @@ button {
 }
 
 .ec-main-nav {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   padding: 5px;
   border: 1px solid var(--line);
@@ -161,15 +189,17 @@ button {
 .ec-nav-link {
   color: var(--muted);
   text-decoration: none;
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  padding: 9px 14px;
+  padding: 9px 12px;
   border-radius: 999px;
+  white-space: nowrap;
   transition: 0.18s ease;
 }
 
 .ec-nav-link:hover,
-.ec-nav-link.active {
+.ec-nav-link.active,
+.ec-nav-link[aria-current='page'] {
   color: var(--bg);
   background: var(--cyan);
 }
@@ -263,7 +293,7 @@ button.secondary-btn:hover {
 
 .ec-mobile-nav {
   display: none;
-  width: min(1180px, calc(100% - 32px));
+  width: min(1320px, calc(100% - 32px));
   margin: 0 auto 14px;
   padding: 10px;
   border: 1px solid var(--line);
@@ -274,6 +304,105 @@ button.secondary-btn:hover {
 .ec-mobile-nav.open {
   display: grid;
   gap: 6px;
+}
+
+.ec-footer {
+  margin-top: auto;
+  border-top: 1px solid rgba(241, 245, 249, 0.1);
+  background:
+    linear-gradient(180deg, rgba(10, 13, 20, 0.96), rgba(5, 6, 10, 0.98));
+}
+
+.ec-footer-inner {
+  width: min(1320px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 42px 0 34px;
+  display: grid;
+  grid-template-columns: minmax(280px, 1.4fr) minmax(160px, 0.65fr) minmax(220px, 0.85fr) minmax(260px, 0.9fr);
+  gap: 28px;
+}
+
+.ec-footer-brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ec-footer-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  flex: 0 0 auto;
+}
+
+.ec-footer h2,
+.ec-footer h3,
+.ec-footer p {
+  margin: 0;
+}
+
+.ec-footer h2 {
+  color: var(--text);
+  font-size: 1.35rem;
+  line-height: 1.15;
+  font-weight: 900;
+}
+
+.ec-footer h3 {
+  margin-bottom: 14px;
+  color: var(--text);
+  font-size: 0.88rem;
+  line-height: 1.25;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ec-footer p,
+.ec-footer-sources span,
+.ec-footer-links a {
+  color: #b8c6d5;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ec-footer-links,
+.ec-footer-sources,
+.ec-footer-contact {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+}
+
+.ec-footer-links a {
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.ec-footer-links a:hover {
+  color: var(--cyan);
+}
+
+.ec-footer-note {
+  margin-top: 12px !important;
+  padding: 14px;
+  border: 1px solid rgba(255, 183, 3, 0.18);
+  border-radius: var(--radius-md);
+  color: #d8c68e !important;
+  background: rgba(255, 183, 3, 0.06);
+}
+
+.ec-footer-bottom {
+  width: min(1320px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid rgba(241, 245, 249, 0.08);
+  color: #8fa0b4;
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 .auth-page {
@@ -871,6 +1000,16 @@ button.secondary-btn:hover {
   margin-top: 14px;
 }
 
+.analise-field-label {
+  display: block;
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 900;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
 .analise-products-card .ec-produtos-lista {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
@@ -899,6 +1038,18 @@ button.secondary-btn:hover {
 .analise-chip-remove:hover,
 .analise-chip-remove:focus-visible {
   color: var(--text) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.analise-search-result {
+  width: 100%;
+  border: 0;
+  color: inherit;
+  text-align: left;
+}
+
+.analise-search-result:hover,
+.analise-search-result:focus-visible {
   background: rgba(255, 255, 255, 0.08) !important;
 }
 
@@ -2084,13 +2235,19 @@ button.secondary-btn:hover {
   }
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1120px) {
   .ec-main-nav {
     display: none;
   }
 
   .ec-hamburger {
     display: block;
+  }
+}
+
+@media (max-width: 960px) {
+  .ec-footer-inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .ec-hero,
@@ -2119,8 +2276,10 @@ button.secondary-btn:hover {
 @media (max-width: 640px) {
   .ec-header-inner,
   .ec-container,
-  .ec-mobile-nav {
-    width: min(100% - 20px, 1180px);
+  .ec-mobile-nav,
+  .ec-footer-inner,
+  .ec-footer-bottom {
+    width: min(100% - 20px, 1320px);
   }
 
   .ec-header-inner {
@@ -2134,6 +2293,17 @@ button.secondary-btn:hover {
   .ec-brand-text span,
   .ec-user-chip span {
     display: none;
+  }
+
+  .ec-mobile-nav {
+    margin-bottom: 10px;
+  }
+
+  .ec-mobile-nav .ec-nav-link {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-md);
   }
 
   .ec-container {
@@ -2200,10 +2370,25 @@ button.secondary-btn:hover {
   .auth-card {
     padding: 24px;
   }
+
+  .ec-footer-inner {
+    grid-template-columns: 1fr;
+    padding: 32px 0 24px;
+  }
+
+  .ec-footer-brand {
+    flex-direction: column;
+  }
+
+  .ec-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @media print {
   .ec-header,
+  .ec-footer,
   .ec-btn,
   .ec-btn-header,
   .ec-hamburger,

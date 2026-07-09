@@ -10,6 +10,7 @@ import Simulador from './pages/Simulador';
 import ProtectedRoute from './routes/ProtectedRoute';
 import AuthModal from './components/AuthModal';
 import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -80,7 +81,13 @@ function App() {
     <div className="app-container">
       <Header user={user} onLogout={logout} onRequireAuth={requireAuth} />
       {notification && (
-        <div className={`toast ${notification.type}`}>{notification.message}</div>
+        <div
+          className={`toast ${notification.type}`}
+          role={notification.type === 'error' ? 'alert' : 'status'}
+          aria-live={notification.type === 'error' ? 'assertive' : 'polite'}
+        >
+          {notification.message}
+        </div>
       )}
 
       <Routes>
@@ -96,6 +103,7 @@ function App() {
       </Routes>
 
       <AuthModal visible={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <Footer />
     </div>
   );
 }
