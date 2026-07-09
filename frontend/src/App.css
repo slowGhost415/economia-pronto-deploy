@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
 :root {
   --bg: #05060a;
@@ -31,7 +31,8 @@
   --radius-xl: 28px;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
   --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.3);
-  --font: 'Inter', 'Segoe UI', sans-serif;
+  --font: 'Manrope', 'Segoe UI', sans-serif;
+  --font-display: 'Sora', 'Manrope', sans-serif;
 }
 
 *,
@@ -57,6 +58,18 @@ body {
     linear-gradient(135deg, #05060a 0%, #0b111c 55%, #08090f 100%);
   background-size: 44px 44px, 44px 44px, auto, auto, auto;
   -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+.ec-brand-text strong,
+.auth-title,
+.ec-hero-stat-value,
+.ec-indicador-valor,
+.metric-card strong,
+.total-price {
+  font-family: var(--font-display);
 }
 
 button,
@@ -443,8 +456,7 @@ button.secondary-btn:hover {
 .auth-subtitle,
 .ec-card p,
 .panel-heading p,
-.simulator-hero p,
-.ai-content p {
+.simulator-hero p {
   color: var(--muted);
 }
 
@@ -1410,7 +1422,6 @@ button.secondary-btn:hover {
 .ec-hero,
 .simulator-hero,
 .tax-lab,
-.ai-panel,
 .ec-card,
 .ec-indicador-card,
 .ec-acesso-card,
@@ -1492,8 +1503,7 @@ button.secondary-btn:hover {
 .ec-hero-actions,
 .ec-chart-actions,
 .modal-actions,
-.ec-search,
-.ai-question-row {
+.ec-search {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -1603,7 +1613,6 @@ button.secondary-btn:hover {
 .ec-acesso-card,
 .ec-historico-lista,
 .tax-lab,
-.ai-panel,
 .simulator-hero {
   border-radius: var(--radius-lg);
 }
@@ -1620,7 +1629,6 @@ button.secondary-btn:hover {
 .ec-card h2,
 .ec-card h3,
 .panel-heading h2,
-.ai-panel h2,
 .tax-result-panel h3 {
   margin-top: 0;
   letter-spacing: 0;
@@ -1786,8 +1794,7 @@ button.secondary-btn:hover {
 }
 
 .ec-insights,
-.ai-answer,
-.ai-note {
+.tax-note {
   padding: 16px;
   border: 1px solid rgba(44, 242, 255, 0.18);
   border-radius: var(--radius-md);
@@ -1948,16 +1955,14 @@ button.secondary-btn:hover {
   background: rgba(5, 6, 10, 0.42);
 }
 
-.tax-suggestions,
-.ai-chips {
+.tax-suggestions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 12px 0 16px;
 }
 
-.tax-suggestions button,
-.ai-chips button {
+.tax-suggestions button {
   min-height: 34px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -2023,43 +2028,8 @@ button.secondary-btn:hover {
   color: var(--text);
 }
 
-.ai-note {
+.tax-note {
   margin-top: 16px;
-}
-
-.ai-panel {
-  display: grid;
-  grid-template-columns: 96px 1fr;
-  gap: 20px;
-  padding: 24px;
-  margin-bottom: 28px;
-}
-
-.ai-avatar {
-  width: 88px;
-  height: 88px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(44, 242, 255, 0.24);
-  border-radius: 24px;
-  background: radial-gradient(circle, rgba(44, 242, 255, 0.24), rgba(255, 183, 3, 0.08));
-}
-
-.ai-avatar span {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--cyan);
-  box-shadow: 0 0 28px var(--cyan), 34px 0 0 -10px var(--amber), -22px 18px 0 -12px var(--green);
-}
-
-.ai-question-row {
-  margin-top: 16px;
-}
-
-.ai-question-row .ec-input {
-  flex: 1;
-  min-width: 220px;
 }
 
 .modal-overlay {
@@ -2452,6 +2422,138 @@ body {
 .mini-trend.amber,
 .floating-dashboard-card.bottom .mini-trend {
   color: var(--amber);
+}
+
+.interactive-focus-section {
+  padding-top: 34px;
+}
+
+.focus-lab {
+  display: grid;
+  grid-template-columns: minmax(270px, 0.42fr) minmax(0, 0.58fr);
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid rgba(241, 245, 249, 0.11);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(44, 242, 255, 0.1), transparent 30%),
+    linear-gradient(145deg, rgba(16, 20, 29, 0.88), rgba(7, 10, 16, 0.9));
+  box-shadow: 0 28px 78px rgba(0, 0, 0, 0.28);
+}
+
+.focus-tabs {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.focus-tabs button {
+  min-height: 78px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid rgba(241, 245, 249, 0.11);
+  border-radius: 18px;
+  color: var(--text);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.045);
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.focus-tabs button:hover {
+  transform: translateX(3px);
+  border-color: rgba(44, 242, 255, 0.28);
+}
+
+.focus-tabs button[aria-selected="true"] {
+  border-color: rgba(44, 242, 255, 0.42);
+  background: linear-gradient(135deg, rgba(44, 242, 255, 0.15), rgba(255, 183, 3, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(44, 242, 255, 0.08);
+}
+
+.focus-tabs span,
+.focus-kicker {
+  color: #93a4b8;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.focus-tabs strong {
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.1;
+}
+
+.focus-panel {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(24px, 3vw, 36px);
+  border: 1px solid rgba(241, 245, 249, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(21, 27, 39, 0.88), rgba(8, 11, 18, 0.84)),
+    rgba(16, 20, 29, 0.82);
+}
+
+.focus-panel.cyan {
+  border-color: rgba(44, 242, 255, 0.24);
+}
+
+.focus-panel.amber {
+  border-color: rgba(255, 183, 3, 0.24);
+}
+
+.focus-panel.green {
+  border-color: rgba(64, 216, 138, 0.24);
+}
+
+.focus-panel h3 {
+  max-width: 760px;
+  margin: 10px 0 0;
+  color: var(--text);
+  font-size: clamp(2.05rem, 3.4vw, 3.25rem);
+  line-height: 1;
+}
+
+.focus-panel p {
+  max-width: 760px;
+  margin: 18px 0 0;
+  color: #c1cedc;
+  font-size: 1.08rem;
+  line-height: 1.68;
+}
+
+.focus-checklist {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.focus-checklist span {
+  min-height: 92px;
+  display: grid;
+  gap: 10px;
+  align-content: center;
+  padding: 14px;
+  border: 1px solid rgba(241, 245, 249, 0.09);
+  border-radius: 16px;
+  color: #d6e0ea;
+  background: rgba(255, 255, 255, 0.045);
+  line-height: 1.35;
+}
+
+.focus-checklist strong {
+  color: var(--amber);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
 }
 
 .feature-grid {
@@ -3478,7 +3580,6 @@ body {
 
   .ec-hero,
   .tax-lab,
-  .ai-panel,
   .simulator-hero,
   .ec-card,
   .ec-indicador-card {
@@ -3497,8 +3598,7 @@ body {
 
   .ec-hero-stats,
   .split-fields,
-  .tax-breakdown,
-  .ai-panel {
+  .tax-breakdown {
     grid-template-columns: 1fr;
   }
 
@@ -3522,8 +3622,7 @@ body {
 
   .ec-btn,
   .ec-btn-header,
-  .auth-btn-primary,
-  .ai-question-row .ec-btn {
+  .auth-btn-primary {
     width: 100%;
     justify-content: center;
   }
@@ -3555,8 +3654,13 @@ body {
 @media (max-width: 1180px) {
   .home-hero,
   .split-section,
+  .focus-lab,
   .dashboard-preview {
     grid-template-columns: 1fr;
+  }
+
+  .focus-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .home-visual-panel {
@@ -3632,6 +3736,7 @@ body {
 
   .home-metrics-row,
   .feature-grid,
+  .focus-checklist,
   .education-grid,
   .concept-grid,
   .source-grid,
@@ -3645,6 +3750,25 @@ body {
 
   .home-metrics-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .focus-lab {
+    padding: 14px;
+    border-radius: 22px;
+  }
+
+  .focus-tabs,
+  .focus-checklist {
+    grid-template-columns: 1fr;
+  }
+
+  .focus-tabs button {
+    min-height: 70px;
+  }
+
+  .focus-panel {
+    min-height: auto;
+    border-radius: 20px;
   }
 
   .home-visual-panel {
@@ -3736,8 +3860,7 @@ body {
   .ec-btn-header,
   .ec-hamburger,
   .ec-chart-actions,
-  .tax-lab,
-  .ai-panel {
+  .tax-lab {
     display: none !important;
   }
 

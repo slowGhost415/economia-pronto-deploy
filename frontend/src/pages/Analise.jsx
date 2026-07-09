@@ -671,7 +671,7 @@ const Analise = () => {
         <main id="conteudo-principal" className="ec-container analise-page">
             <section className="analise-hero">
                 <div className="analise-hero-copy">
-                    <span className="eyebrow">Painel de inteligência econômica</span>
+                    <span className="eyebrow">Painel de leitura econômica</span>
                     <h1>Resumo do cenário econômico.</h1>
                     <p>
                         Leitura automática entre dados observados, tendências, pontos de atenção

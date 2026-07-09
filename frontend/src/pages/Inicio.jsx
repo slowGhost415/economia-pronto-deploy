@@ -41,6 +41,7 @@ const Inicio = ({ user }) => {
     const [indicadores, setIndicadores] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [historico, setHistorico] = useState([]);
+    const [focoAtivo, setFocoAtivo] = useState('consumo');
 
     useEffect(() => {
         document.title = 'Economic | Economia visual, indicadores e educação financeira';
@@ -132,6 +133,55 @@ const Inicio = ({ user }) => {
         }
     ];
 
+    const focusOptions = [
+        {
+            id: 'consumo',
+            label: 'Consumo',
+            eyebrow: 'IPCA + cesta local',
+            title: 'Entenda onde a inflação pesa no carrinho.',
+            description: 'Compare a inflação oficial com alimentos, combustíveis e serviços para enxergar o impacto no orçamento mensal.',
+            bullets: ['Produtos monitorados', 'Tendência por período', 'Leitura de impacto'],
+            action: 'Abrir análise de consumo',
+            destino: '/analise',
+            tone: 'cyan'
+        },
+        {
+            id: 'credito',
+            label: 'Crédito',
+            eyebrow: 'Selic + juros',
+            title: 'Simule decisões antes de assumir parcelas.',
+            description: 'Veja como juros compostos, aportes e prazo mudam o resultado financeiro em cenários simples de comparar.',
+            bullets: ['Simulação rápida', 'Cenários de prazo', 'Efeito dos juros'],
+            action: 'Ir para o simulador',
+            destino: '/simulador',
+            tone: 'amber'
+        },
+        {
+            id: 'precos',
+            label: 'Preços',
+            eyebrow: 'Séries e tabelas',
+            title: 'Acompanhe indicadores e histórico com clareza.',
+            description: 'Use filtros para consultar produtos, variações mensais e séries econômicas sem depender de planilhas soltas.',
+            bullets: ['Filtros por categoria', 'Histórico mensal', 'Fontes visíveis'],
+            action: 'Ver dados econômicos',
+            destino: '/dados',
+            tone: 'green'
+        },
+        {
+            id: 'aprendizado',
+            label: 'Aprendizado',
+            eyebrow: 'Conceitos econômicos',
+            title: 'Aprenda o conceito e volte ao dado com contexto.',
+            description: 'Revise Selic, inflação, câmbio, PIB e orçamento com explicações curtas conectadas à vida real.',
+            bullets: ['Glossário prático', 'Perguntas rápidas', 'Exemplos do dia a dia'],
+            action: 'Explorar educação',
+            destino: '/educacao',
+            tone: 'neutral'
+        }
+    ];
+
+    const focoSelecionado = focusOptions.find((item) => item.id === focoAtivo) || focusOptions[0];
+
     const trilhas = ['Selic', 'Inflação', 'Câmbio', 'PIB', 'Consumo', 'Orçamento', 'Juros compostos', 'Impostos'];
 
     return (
@@ -184,6 +234,60 @@ const Inicio = ({ user }) => {
                         <MiniTrend values={ipcaHist} tone="amber" />
                     </div>
                 </aside>
+            </section>
+
+            <section className="site-section site-shell interactive-focus-section" aria-label="Escolha de foco de navegação econômica">
+                <SectionHeader
+                    eyebrow="Explore do seu jeito"
+                    title="Escolha um foco e o site indica o melhor caminho."
+                    description="A navegação fica mais prática: você seleciona o assunto, entende o contexto e segue direto para a área certa."
+                />
+                <div className="focus-lab">
+                    <div className="focus-tabs" role="tablist" aria-label="Focos de navegação econômica">
+                        {focusOptions.map((option) => (
+                            <button
+                                key={option.id}
+                                id={`focus-tab-${option.id}`}
+                                type="button"
+                                role="tab"
+                                aria-selected={option.id === focoAtivo}
+                                aria-controls={`focus-panel-${option.id}`}
+                                onClick={() => setFocoAtivo(option.id)}
+                            >
+                                <span>{option.eyebrow}</span>
+                                <strong>{option.label}</strong>
+                            </button>
+                        ))}
+                    </div>
+
+                    <article
+                        id={`focus-panel-${focoSelecionado.id}`}
+                        className={`focus-panel ${focoSelecionado.tone}`}
+                        role="tabpanel"
+                        aria-labelledby={`focus-tab-${focoSelecionado.id}`}
+                    >
+                        <div>
+                            <span className="focus-kicker">{focoSelecionado.eyebrow}</span>
+                            <h3>{focoSelecionado.title}</h3>
+                            <p>{focoSelecionado.description}</p>
+                        </div>
+                        <div className="focus-checklist" aria-label="Recursos deste foco">
+                            {focoSelecionado.bullets.map((item, index) => (
+                                <span key={item}>
+                                    <strong>{String(index + 1).padStart(2, '0')}</strong>
+                                    {item}
+                                </span>
+                            ))}
+                        </div>
+                        <button
+                            type="button"
+                            className="ec-btn"
+                            onClick={() => registrarAcao('foco_home', `Escolheu foco ${focoSelecionado.label}`, focoSelecionado.destino)}
+                        >
+                            {focoSelecionado.action}
+                        </button>
+                    </article>
+                </div>
             </section>
 
             <section className="site-section site-shell">

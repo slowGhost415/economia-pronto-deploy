@@ -159,7 +159,7 @@ const SmartTaxSearch = () => {
             ))}
           </div>
 
-          <div className="ai-note">
+          <div className="tax-note">
             Estimativa educativa: regras variam por NCM, estado, regime tributario e destino. Use como simulador rapido, nao como parecer fiscal.
           </div>
         </div>
