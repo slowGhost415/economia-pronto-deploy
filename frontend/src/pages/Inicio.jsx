@@ -78,7 +78,13 @@ const Inicio = ({ user }) => {
         return new Date(iso).toLocaleString('pt-BR', {
             day: '2-digit',
             month: '2-digit',
-            year: 'numeric',
+            year: 'numeric'
+        });
+    };
+
+    const formatarHoraAtualizacao = (iso) => {
+        if (!iso) return 'Aguardando conexão';
+        return new Date(iso).toLocaleString('pt-BR', {
             hour: '2-digit',
             minute: '2-digit'
         });
@@ -148,10 +154,16 @@ const Inicio = ({ user }) => {
                     </div>
 
                     <div className="home-metrics-row" aria-label="Indicadores rápidos">
-                        <MetricCard label="Selic atual" value={valor(indicadores?.selic, '%')} meta="Banco Central / SGS" tone="cyan" />
+                        <MetricCard label="Selic atual" value={valor(indicadores?.selic, '%')} meta="BCB / SGS" tone="cyan" />
                         <MetricCard label="IPCA" value={valor(indicadores?.ipca, '%')} meta="Inflação monitorada" tone="amber" />
-                        <MetricCard label="Produtos monitorados" value={produtosCount || '...'} meta="Base local de preços" />
-                        <MetricCard label="Última atualização" value={formatarDataAtualizacao(ultimaAtualizacao)} meta="Cache local + fontes oficiais" />
+                        <MetricCard label="Produtos monitorados" value={produtosCount || '...'} meta="Base local" />
+                        <MetricCard
+                            label="Última atualização"
+                            value={formatarDataAtualizacao(ultimaAtualizacao)}
+                            trend={formatarHoraAtualizacao(ultimaAtualizacao)}
+                            meta="Cache local"
+                            variant="compact"
+                        />
                     </div>
                 </div>
 

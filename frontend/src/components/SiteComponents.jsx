@@ -15,8 +15,8 @@ export const SectionHeader = ({ eyebrow, title, description, align = 'left', chi
     </div>
 );
 
-export const MetricCard = ({ label, value, unit, meta, trend, tone = 'neutral' }) => (
-    <article className={`metric-card ${tone}`}>
+export const MetricCard = ({ label, value, unit, meta, trend, tone = 'neutral', variant = 'default' }) => (
+    <article className={`metric-card ${tone} ${variant}`}>
         <span>{label}</span>
         <strong>
             {value}
