@@ -1,4 +1,4 @@
-// Dados econômicos da região do Cariri - 2025/2026
+// Dados econômicos - 2025/2026
 const dadosEconomicos = {
     // Períodos (meses)
     periodos: ["Jan/25", "Fev/25", "Mar/25", "Abr/25", "Mai/25", "Jun/25", "Jul/25", "Ago/25", "Set/25", "Out/25", "Nov/25", "Dez/25"],

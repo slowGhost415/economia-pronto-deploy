@@ -303,10 +303,69 @@ const Analise = () => {
     };
 
     const produtos = obterProdutos();
+    const dadosEconomicos = dados.dadosEconomicos;
+    const rangeAtual = getPeriodoRange(dados);
+    const periodoInicio = dadosEconomicos.periodos[rangeAtual.start] || dadosEconomicos.periodos[0] || '-';
+    const periodoFim = dadosEconomicos.periodos[rangeAtual.end - 1] || dadosEconomicos.periodos[dadosEconomicos.periodos.length - 1] || '-';
+    const selicAtual = dadosEconomicos.selic[dadosEconomicos.selic.length - 1];
+    const inflacaoAtual = dadosEconomicos.inflacao[dadosEconomicos.inflacao.length - 1];
+    const produtosSelecionados = selecao
+        .map(chave => dadosEconomicos.produtos[chave])
+        .filter(Boolean);
+    const produtosResumo = produtosSelecionados.slice(0, 3).map(prod => prod.nome).join(', ');
 
     return (
-        <main className="ec-container">
-            <div className="ec-card">
+        <main className="ec-container analise-page">
+            <section className="analise-hero">
+                <div className="analise-hero-copy">
+                    <span className="eyebrow">Painel de inteligência econômica</span>
+                    <h1>Análise econômica com visão de dashboard profissional.</h1>
+                    <p>
+                        Compare preços, Selic e IPCA em uma tela ampla, com leitura rápida para
+                        tendências, correlações e impacto no consumo.
+                    </p>
+                </div>
+
+                <div className="analise-hero-summary">
+                    <div>
+                        <span>Período em foco</span>
+                        <strong>{periodoInicio} - {periodoFim}</strong>
+                    </div>
+                    <div>
+                        <span>Produtos selecionados</span>
+                        <strong>{produtosSelecionados.length || 0}</strong>
+                    </div>
+                    <div>
+                        <span>Séries ativas</span>
+                        <strong>{[chkPrecos, chkSelic, chkInflacao].filter(Boolean).length}/3</strong>
+                    </div>
+                </div>
+            </section>
+
+            <section className="analise-kpi-grid">
+                <div className="ec-indicador-card analise-kpi-card">
+                    <div className="ec-indicador-label">Selic atual</div>
+                    <div className="ec-indicador-valor">{selicAtual?.toFixed(2)}%</div>
+                    <div className="ec-indicador-sub">Referência da última leitura disponível</div>
+                </div>
+                <div className="ec-indicador-card analise-kpi-card">
+                    <div className="ec-indicador-label">IPCA atual</div>
+                    <div className="ec-indicador-valor">{inflacaoAtual?.toFixed(2)}%</div>
+                    <div className="ec-indicador-sub">Inflação mensal monitorada</div>
+                </div>
+                <div className="ec-indicador-card analise-kpi-card">
+                    <div className="ec-indicador-label">Produtos em análise</div>
+                    <div className="ec-indicador-valor">{produtosSelecionados.length}</div>
+                    <div className="ec-indicador-sub">{produtosResumo || 'Nenhum produto selecionado'}</div>
+                </div>
+                <div className="ec-indicador-card analise-kpi-card">
+                    <div className="ec-indicador-label">Última atualização</div>
+                    <div className="ec-indicador-valor analise-kpi-date">{dataAtualizacao || '-'}</div>
+                    <div className="ec-indicador-sub">Dados locais e indicadores BCB</div>
+                </div>
+            </section>
+
+            <div className="ec-card analise-config-card">
                 <h2>Configuração da Análise</h2>
 
                 <p>Escolha quais variáveis devem ser exibidas no gráfico e quais produtos você quer comparar.</p>
@@ -333,13 +392,13 @@ const Analise = () => {
                 </div>
             </div>
 
-            <div className="ec-card">
+            <div className="ec-card analise-products-card">
                 <h2>Seleção de Produtos</h2>
                 <p>Pesquise qualquer produto pelo nome, categoria ou sinônimos. O sistema encontra automaticamente os dados disponíveis.</p>
 
                 <div style={{ position: 'relative', marginBottom: 20 }}>
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                        <div style={{ position: 'relative', flex: 1 }}>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{ position: 'relative', flex: '1 1 260px' }}>
                             <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--c3)', fontSize: '1rem', pointerEvents: 'none' }}>🔍</div>
                             <input
                                 ref={inputBuscaRef}
@@ -454,7 +513,7 @@ const Analise = () => {
                 </div>
             </div>
 
-            <div className="ec-card">
+            <div className="ec-card analise-chart-card">
                 <h2>Gráfico Interativo</h2>
                 <div className="ec-chart-actions">
                     <button className="ec-btn ec-btn-sec" onClick={exportarPNG}>Exportar PNG</button>
@@ -465,11 +524,11 @@ const Analise = () => {
                 </div>
             </div>
 
-            <div className="ec-card">
+            <div className="ec-card analise-compare-card">
                 <h2>Comparação Produto vs Produto</h2>
                 <p>Selecione dois produtos para comparar métricas de preço e calcular a correlação entre eles.</p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginTop: 16 }}>
                     <div>
                         <label style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--c5)', textTransform: 'uppercase', letterSpacing: '0.4px' }}>Produto A</label>
                         <select className="ec-select" value={prodA} onChange={e => setProdA(e.target.value)}>
@@ -486,7 +545,7 @@ const Analise = () => {
 
                 {comparacaoInfo && (
                     <>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 20 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 12, marginTop: 20 }}>
                             <div className="ec-indicador-card" style={{ padding: '18px 20px' }}>
                                 <div className="ec-indicador-label">Correlação (r)</div>
                                 <div className="ec-indicador-valor" style={{ fontSize: '1.6rem', color: comparacaoInfo.corr > 0.3 ? 'var(--c-success)' : comparacaoInfo.corr < -0.3 ? 'var(--c-danger)' : 'var(--c4)' }}>
@@ -514,7 +573,7 @@ const Analise = () => {
                             </div>
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 12 }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginTop: 12 }}>
                             <div className="ec-indicador-card" style={{ padding: '16px 20px' }}>
                                 <div className="ec-indicador-label" style={{ marginBottom: 12 }}>Amplitude de preço</div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -578,7 +637,7 @@ const Analise = () => {
                 )}
             </div>
 
-            <div className="ec-card">
+            <div className="ec-card analise-auto-card">
                 <h2>Análise Automática</h2>
                 <div className="ec-insights">
                     {analiseText

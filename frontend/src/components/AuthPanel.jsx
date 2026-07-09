@@ -28,7 +28,7 @@ const AuthPanel = ({ onLogin, onSignup, loading }) => {
                         <span style={{ fontSize: '1.3rem' }}>&#128200;</span>
                     </div>
                     <div className="auth-logo-text">
-                        <h2>Cariri Econômico</h2>
+                        <h2>Economic</h2>
                         <span>Plataforma de análise macroeconômica</span>
                     </div>
                 </div>

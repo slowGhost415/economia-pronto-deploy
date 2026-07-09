@@ -27,7 +27,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
                         <span style={{ fontSize: '1.1rem' }}>&#128200;</span>
                     </div>
                     <div className="ec-brand-text">
-                        <h1>Cariri Econômico</h1>
+                        <h1>Economic</h1>
                         <span>Análise macroeconômica</span>
                     </div>
                 </Link>
