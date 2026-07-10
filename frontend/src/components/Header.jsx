@@ -12,6 +12,7 @@ const Header = ({ user, onLogout, onRequireAuth }) => {
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
         { to: '/simulador', label: 'Simulador' },
+        { to: '/financeiro', label: 'Investimentos' },
         { to: '/analise#graficos', label: 'Gráficos' },
         { to: '/educacao', label: 'Educação' },
         { to: '/sobre', label: 'Sobre' },

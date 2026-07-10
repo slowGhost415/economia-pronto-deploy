@@ -12,7 +12,7 @@ const trilhas = [
         title: 'Comece por aqui',
         level: 'Básico',
         time: '8 min',
-        description: 'Entenda juros, inflação e poder de compra antes de entrar nos gráficos.',
+        description: 'Entenda juros, inflação e poder de compra antes de comparar os indicadores.',
         example: 'Exemplo: por que seu mercado muda mesmo quando seu salário não muda.'
     },
     {
@@ -58,7 +58,7 @@ const conceitos = [
         title: 'O que é Selic?',
         definition: 'É a taxa básica de juros da economia brasileira.',
         example: 'Quando ela sobe, crédito costuma ficar mais caro.',
-        site: 'Aparece nos indicadores, no gráfico comparativo e nas leituras de cenário.',
+        site: 'Aparece nos indicadores, nas comparações e nas leituras de cenário.',
         why: 'Ajuda a entender financiamento, renda fixa, cartão e ritmo do consumo.',
         mistake: 'Achar que Selic é a taxa exata cobrada em qualquer empréstimo.',
         question: 'Se a Selic sobe, o crédito tende a ficar mais barato ou mais caro?'
@@ -78,7 +78,7 @@ const conceitos = [
         title: 'Como o dólar afeta os preços?',
         definition: 'O câmbio influencia produtos importados e insumos usados por empresas.',
         example: 'Combustível, trigo, eletrônicos e viagens podem sentir dólar alto.',
-        site: 'A seção de fontes planejadas reserva espaço para integrar câmbio aos gráficos.',
+        site: 'A seção de fontes planejadas reserva espaço para integrar câmbio às comparações.',
         why: 'Ajuda a entender pressões que chegam ao consumidor indiretamente.',
         mistake: 'Achar que o dólar só importa para quem viaja.',
         question: 'Dólar alto pode afetar produtos nacionais com insumos importados?'
@@ -210,7 +210,7 @@ const Educacao = () => {
                         <article key={item.title} className="concept-card">
                             <div className="concept-card-top">
                                 <Badge>{item.categoria}</Badge>
-                                <Link to="/analise#graficos">Ver no gráfico</Link>
+                                <Link to="/analise#graficos">Ver na análise</Link>
                             </div>
                             <h3>{item.title}</h3>
                             <dl>
@@ -251,7 +251,7 @@ const Educacao = () => {
             <div className="site-shell">
                 <CTASection
                     title="Conecte o conceito com os indicadores reais."
-                    description="Depois de aprender, volte para a análise e observe como juros, inflação e preços aparecem nos gráficos."
+                    description="Depois de aprender, volte para a análise e observe como juros, inflação e preços aparecem na leitura visual."
                     primary={{ to: '/analise', label: 'Abrir análise' }}
                     secondary={{ to: '/dados', label: 'Ver indicadores' }}
                 />

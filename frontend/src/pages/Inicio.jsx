@@ -42,6 +42,7 @@ const Inicio = ({ user }) => {
     const [carregando, setCarregando] = useState(true);
     const [historico, setHistorico] = useState([]);
     const [focoAtivo, setFocoAtivo] = useState('consumo');
+    const [orbFocus, setOrbFocus] = useState('consumo');
 
     useEffect(() => {
         document.title = 'Economic | Indicadores econômicos, preços e simulações';
@@ -108,7 +109,7 @@ const Inicio = ({ user }) => {
         {
             marker: '01',
             title: 'Análise de cenário',
-            description: 'Compare preços, Selic e IPCA com tendência, correlação, impacto no consumo e exportação do gráfico.',
+            description: 'Compare preços, Selic e IPCA com tendência, correlação, impacto no consumo e exportação da leitura.',
             action: 'Abrir análises',
             onClick: () => registrarAcao('analise', 'Acessou análise econômica', '/analise')
         },
@@ -121,8 +122,8 @@ const Inicio = ({ user }) => {
         },
         {
             marker: '03',
-            title: 'Simulador financeiro',
-            description: 'Projete juros compostos, aportes e cenários financeiros sem perder o contexto econômico.',
+            title: 'Simulador de compras e juros',
+            description: 'Teste preço final, tributos, parcelas, inflação e cenários financeiros sem perder o contexto econômico.',
             action: 'Simular cenários',
             onClick: () => registrarAcao('simulador', 'Acessou simulador', '/simulador')
         },
@@ -185,6 +186,41 @@ const Inicio = ({ user }) => {
     const focoSelecionado = focusOptions.find((item) => item.id === focoAtivo) || focusOptions[0];
 
     const trilhas = ['Selic', 'Inflação', 'Câmbio', 'PIB', 'Consumo', 'Orçamento', 'Juros compostos', 'Impostos'];
+    const decisionNodes = [
+        {
+            id: 'consumo',
+            label: 'Consumo',
+            metric: 'IPCA + preços',
+            objective: 'Medir como inflação e produtos essenciais mexem no orçamento.',
+            route: '/analise',
+            action: 'Analisar consumo'
+        },
+        {
+            id: 'impostos',
+            label: 'Impostos',
+            metric: 'Compra real',
+            objective: 'Simular preço final, frete, tributos, parcelas e inflação da compra.',
+            route: '/simulador',
+            action: 'Calcular compra'
+        },
+        {
+            id: 'investimentos',
+            label: 'Investimentos',
+            metric: 'CDI + IR',
+            objective: 'Comparar rendimento bruto e líquido de aplicações de renda fixa.',
+            route: '/financeiro',
+            action: 'Verificar carteira'
+        },
+        {
+            id: 'educacao',
+            label: 'Educação',
+            metric: 'Conceitos',
+            objective: 'Entender Selic, IPCA, dólar, PIB e juros antes de decidir.',
+            route: '/educacao',
+            action: 'Aprender conceito'
+        }
+    ];
+    const selectedDecision = decisionNodes.find((item) => item.id === orbFocus) || decisionNodes[0];
 
     return (
         <main className="site-page home-page">
@@ -225,22 +261,52 @@ const Inicio = ({ user }) => {
                             <span>Cenário econômico</span>
                             <strong>Juros, preços e consumo</strong>
                         </div>
-                        <div className="orb-stage">
-                            <EconomicOrb />
+                        <div className="orb-stage interactive-orb-stage">
+                            <button
+                                type="button"
+                                className="orb-cycle-button"
+                                onClick={() => {
+                                    const currentIndex = decisionNodes.findIndex((item) => item.id === orbFocus);
+                                    setOrbFocus(decisionNodes[(currentIndex + 1) % decisionNodes.length].id);
+                                }}
+                                aria-label="Alternar foco do mapa econômico"
+                            >
+                                <EconomicOrb />
+                            </button>
+                            <div className="orb-topic-actions" aria-label="Objetivos conectados ao site">
+                                {decisionNodes.map((item) => (
+                                    <button
+                                        type="button"
+                                        key={item.id}
+                                        className={item.id === orbFocus ? 'active' : ''}
+                                        onClick={() => setOrbFocus(item.id)}
+                                    >
+                                        <span>{item.metric}</span>
+                                        <strong>{item.label}</strong>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                         <div className="visual-panel-overlay">
-                            <span>Leitura do momento</span>
-                            <strong>Indicadores, tendências e impacto no orçamento</strong>
+                            <span>{selectedDecision.metric}</span>
+                            <strong>{selectedDecision.objective}</strong>
+                            <button
+                                type="button"
+                                className="panel-link-button"
+                                onClick={() => registrarAcao('mapa_home', `Selecionou ${selectedDecision.label}`, selectedDecision.route)}
+                            >
+                                {selectedDecision.action}
+                            </button>
                         </div>
                         <div className="market-signal-grid">
-                            <div className="floating-signal-card">
+                            <button type="button" className="floating-signal-card" onClick={() => registrarAcao('mapa_home', 'Abriu análise Selic x IPCA', '/analise')}>
                                 <span>Selic x IPCA</span>
                                 <MiniTrend values={selicHist} />
-                            </div>
-                            <div className="floating-signal-card bottom">
+                            </button>
+                            <button type="button" className="floating-signal-card bottom" onClick={() => registrarAcao('mapa_home', 'Abriu simulador de poder de compra', '/simulador')}>
                                 <span>Poder de compra</span>
                                 <MiniTrend values={ipcaHist} tone="amber" />
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </aside>
@@ -340,7 +406,7 @@ const Inicio = ({ user }) => {
                     title="Um retrato dos principais sinais econômicos."
                     description="A visão combina indicadores, tendência e interpretação para mostrar contexto antes da análise completa."
                 >
-                    <Link className="ec-btn ec-btn-outline" to="/analise#graficos">Ver gráficos</Link>
+                    <Link className="ec-btn ec-btn-outline" to="/analise#graficos">Ver tendências</Link>
                 </SectionHeader>
 
                 <div className="market-preview">
@@ -364,7 +430,7 @@ const Inicio = ({ user }) => {
                             meta="Fonte planejada ou cache BCB"
                             tone="amber"
                         />
-                        <InsightCard title="Insight principal" description="Quando juros e inflação caminham juntos, o crédito e o orçamento costumam sentir primeiro." tone="cyan" />
+                        <InsightCard title="Insight principal" description="Quando juros e inflação caminham juntos, crédito, compras parceladas e orçamento costumam sentir primeiro." tone="cyan" />
                     </div>
                 </div>
             </section>
@@ -416,7 +482,7 @@ const Inicio = ({ user }) => {
             <div className="site-shell">
                 <CTASection
                     title="Comece a transformar dados econômicos em decisões mais claras."
-                    description="Abra a análise para comparar séries ou siga pela educação econômica para entender os conceitos antes dos gráficos."
+                    description="Abra a análise para comparar séries ou siga pela educação econômica para entender os conceitos antes da leitura visual."
                     primary={{ to: '/analise', label: 'Ver análise' }}
                     secondary={{ to: '/educacao', label: 'Aprender conceitos' }}
                 />

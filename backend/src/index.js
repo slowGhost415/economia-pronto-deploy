@@ -27,6 +27,10 @@ const parseAllowedOrigins = () => {
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+  if (process.env.NODE_ENV === 'production') {
+    return new Set(configuredOrigins);
+  }
+
   return new Set([
     ...configuredOrigins,
     'http://localhost:5173',
@@ -37,10 +41,25 @@ const parseAllowedOrigins = () => {
 export const createApp = () => {
   const app = express();
   const allowedOrigins = parseAllowedOrigins();
+  const configuredOrigins = Array.from(allowedOrigins);
 
+  app.set('trust proxy', 1);
   app.disable('x-powered-by');
   app.use(helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "default-src": ["'self'"],
+        "base-uri": ["'self'"],
+        "object-src": ["'none'"],
+        "script-src": ["'self'"],
+        "style-src": ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        "font-src": ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        "img-src": ["'self'", 'data:', 'blob:'],
+        "connect-src": ["'self'", 'https://api.bcb.gov.br', ...configuredOrigins],
+        "frame-ancestors": ["'self'"],
+      },
+    },
     crossOriginEmbedderPolicy: false,
   }));
 
@@ -62,7 +81,7 @@ export const createApp = () => {
 
   app.use(cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin) || !process.env.FRONTEND_URL) {
+      if (!origin || allowedOrigins.has(origin)) {
         return callback(null, true);
       }
 

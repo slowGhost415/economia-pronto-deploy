@@ -10,15 +10,24 @@ const parseRequiredString = (value) => (typeof value === 'string' ? value.trim()
 const isStrongPassword = (value) =>
   typeof value === 'string'
   && value.length >= 8
+  && value.length <= 128
   && /[A-Za-z]/.test(value)
   && /\d/.test(value);
 
-const signToken = (user) =>
-  jwt.sign(
+const isValidEmail = (value) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) && value.length <= 254;
+
+const signToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET nao configurado');
+  }
+
+  return jwt.sign(
     { id: user.id, nome: user.nome, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: '8h' },
   );
+};
 
 export const signup = async (req, res) => {
   try {
@@ -30,8 +39,16 @@ export const signup = async (req, res) => {
       return res.status(400).json({ error: 'Preencha todos os campos' });
     }
 
+    if (nome.length > 80) {
+      return res.status(400).json({ error: 'Nome muito longo' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ error: 'Email invalido' });
+    }
+
     if (!isStrongPassword(senha)) {
-      return res.status(400).json({ error: 'Use uma senha com 8 caracteres, letras e numeros' });
+      return res.status(400).json({ error: 'Use uma senha com 8 a 128 caracteres, letras e numeros' });
     }
 
     const existing = await prisma.user.findUnique({ where: { email } });
@@ -61,6 +78,10 @@ export const login = async (req, res) => {
 
     if (!email || !senha) {
       return res.status(400).json({ error: 'Preencha todos os campos' });
+    }
+
+    if (!isValidEmail(email) || senha.length > 128) {
+      return res.status(401).json({ error: 'Credenciais invalidas' });
     }
 
     const user = await prisma.user.findUnique({ where: { email } });

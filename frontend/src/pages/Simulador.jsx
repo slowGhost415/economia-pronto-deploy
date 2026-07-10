@@ -67,15 +67,15 @@ const Simulador = () => {
                     {
                         label: 'Sem aportes',
                         data: resultado.serieSemAporte,
-                        borderColor: '#4A5C6A',
-                        backgroundColor: 'rgba(74,92,106,0.15)',
+                        borderColor: '#8c7a4e',
+                        backgroundColor: 'rgba(140,122,78,0.15)',
                         tension: 0.35, pointRadius: 0, fill: true,
                     },
                     {
                         label: 'Com aportes mensais',
                         data: resultado.serieComAporte,
-                        borderColor: '#c9a84c',
-                        backgroundColor: 'rgba(201,168,76,0.15)',
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212,175,55,0.16)',
                         tension: 0.35, pointRadius: 0, fill: true,
                     },
                 ]
@@ -83,12 +83,12 @@ const Simulador = () => {
             options: {
                 responsive: true, maintainAspectRatio: false,
                 plugins: {
-                    legend: { labels: { color: '#CCD0CF' } },
+                    legend: { labels: { color: '#f5e7bd' } },
                     tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` } }
                 },
                 scales: {
-                    x: { ticks: { color: '#9BA8AB', maxTicksLimit: 12 }, grid: { color: '#253745' } },
-                    y: { ticks: { color: '#9BA8AB', callback: v => `R$ ${(v / 1000).toFixed(0)}k` }, grid: { color: '#253745' } }
+                    x: { ticks: { color: '#bba46a', maxTicksLimit: 12 }, grid: { color: 'rgba(212,175,55,0.12)' } },
+                    y: { ticks: { color: '#bba46a', callback: v => `R$ ${(v / 1000).toFixed(0)}k` }, grid: { color: 'rgba(212,175,55,0.12)' } }
                 }
             }
         });
@@ -101,9 +101,9 @@ const Simulador = () => {
         <main className="ec-container">
             <section className="simulator-hero">
                 <div>
-                    <span className="eyebrow">Laboratorio economico</span>
-                    <h1>Simule patrimonio, custo real e impacto tributario.</h1>
-                    <p>Compare juros compostos, aportes e precificacao com impostos em uma unica area de decisao.</p>
+                    <span className="eyebrow">Laboratório econômico</span>
+                    <h1>Teste compras, impostos, juros e patrimônio em cenários editáveis.</h1>
+                    <p>Altere preço, frete, parcelas, inflação, alíquotas e aportes para entender o impacto real antes de decidir.</p>
                 </div>
                 <div className="mini-orb">
                     <EconomicOrb compact />
@@ -112,9 +112,23 @@ const Simulador = () => {
 
             <SmartTaxSearch />
 
+            <section className="scenario-capabilities">
+                {[
+                    ['Compra real', 'Cole um link ou descrição e ajuste preço, frete, seguro e parcelas.'],
+                    ['Tributos', 'Teste importação, ICMS, IPI, PIS, COFINS e alíquotas manuais.'],
+                    ['Juros', 'Veja quanto o parcelamento adiciona ao preço final.'],
+                    ['Inflação', 'Compare custo de hoje com poder de compra no prazo escolhido.']
+                ].map(([title, text]) => (
+                    <article key={title}>
+                        <span>{title}</span>
+                        <p>{text}</p>
+                    </article>
+                ))}
+            </section>
+
             <div className="ec-card">
-                <h2>Simulador Financeiro</h2>
-                <p>Projete o crescimento do seu patrimônio com juros compostos.</p>
+                <h2>Simulador de patrimônio</h2>
+                <p>Projete o crescimento do seu patrimônio com juros compostos e aportes recorrentes.</p>
                 <div className="ec-fin-form-row" style={{ flexWrap: 'wrap', gap: 16, marginTop: 16 }}>
                     <div className="ec-fin-field">
                         <label>Capital inicial (R$)</label>

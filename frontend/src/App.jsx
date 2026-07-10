@@ -6,6 +6,7 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import AuthModal from './components/AuthModal';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import AssistantWidget from './components/AssistantWidget';
 
 const Inicio = lazy(() => import('./pages/Inicio'));
 const Analise = lazy(() => import('./pages/Analise'));
@@ -154,6 +155,7 @@ function App() {
       </Suspense>
 
       <AuthModal visible={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <AssistantWidget user={user} />
       <Footer />
     </div>
   );

@@ -9,6 +9,7 @@ const Footer = () => {
         { to: '/analise', label: 'Análises' },
         { to: '/dados', label: 'Indicadores' },
         { to: '/simulador', label: 'Simulador' },
+        { to: '/financeiro', label: 'Investimentos' },
         { to: '/sobre', label: 'Sobre' },
     ];
 

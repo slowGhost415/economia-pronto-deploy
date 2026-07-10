@@ -24,9 +24,10 @@ const Sobre = () => {
         ['Cenário econômico', 'Resumo de Selic, IPCA, preços monitorados, fontes e data de atualização.'],
         ['Análise interativa', 'Filtros por período, seleção de produtos, leitura de tendências e exportação visual.'],
         ['Indicadores e tabelas', 'Consulta de produtos, categorias, séries mensais e variações acumuladas.'],
-        ['Simulador financeiro', 'Projeção de juros compostos, aportes, prazo e comparação de cenários.'],
+        ['Simulador econômico', 'Compra real, tributos, parcelas, inflação, juros compostos e comparação de cenários.'],
+        ['Verificador de investimentos', 'Comparação de CDI, prazo, IR regressivo, isenção, liquidez e rendimento líquido.'],
         ['Educação econômica', 'Glossário, perguntas frequentes e exemplos ligados ao cotidiano.'],
-        ['Fontes e transparência', 'Separação clara entre dados disponíveis, contexto interpretativo e integrações futuras.']
+        ['Assistente básico', 'Guia local para orientar o usuário pelas principais áreas do site.']
     ];
 
     const fontes = [
@@ -92,7 +93,7 @@ const Sobre = () => {
                             title={title}
                             description={description}
                             action="Abrir área"
-                            to={index === 0 ? '/inicio' : index === 1 ? '/analise' : index === 2 ? '/dados' : index === 3 ? '/simulador' : index === 4 ? '/educacao' : '/analise#fontes'}
+                            to={index === 0 ? '/inicio' : index === 1 ? '/analise' : index === 2 ? '/dados' : index === 3 ? '/simulador' : index === 4 ? '/financeiro' : index === 5 ? '/educacao' : '/inicio'}
                         />
                     ))}
                 </div>

@@ -36,9 +36,9 @@ const periodHighlightPlugin = {
         const startX = scales.x.getPixelForValue(startIndex);
         const endX = chartArea.right;
         ctx.save();
-        ctx.fillStyle = 'rgba(64, 196, 141, 0.055)';
+        ctx.fillStyle = 'rgba(212, 175, 55, 0.055)';
         ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.bottom - chartArea.top);
-        ctx.strokeStyle = 'rgba(64, 196, 141, 0.18)';
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.18)';
         ctx.setLineDash([4, 6]);
         ctx.beginPath();
         ctx.moveTo(startX, chartArea.top);
@@ -214,7 +214,7 @@ const Analise = () => {
                     pointRadius: 4,
                     pointHoverRadius: 6,
                     pointBackgroundColor: produto.cor,
-                    pointBorderColor: '#0d1110',
+                    pointBorderColor: '#050505',
                     pointBorderWidth: 2
                 });
             });
@@ -224,14 +224,14 @@ const Analise = () => {
             datasets.push({
                 label: 'Selic (%)',
                 data: d.selic.slice(range.start, range.end),
-                borderColor: '#40c48d',
-                backgroundColor: 'rgba(64,196,141,0.14)',
+                borderColor: '#d4af37',
+                backgroundColor: 'rgba(212,175,55,0.14)',
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
                 borderWidth: 3,
-                pointBackgroundColor: '#40c48d',
-                pointBorderColor: '#0d1110',
+                pointBackgroundColor: '#d4af37',
+                pointBorderColor: '#050505',
                 pointBorderWidth: 2,
                 borderDash: [6, 4]
             });
@@ -241,14 +241,14 @@ const Analise = () => {
             datasets.push({
                 label: 'Inflação (IPCA)',
                 data: d.inflacao.slice(range.start, range.end),
-                borderColor: '#d7a443',
+                borderColor: '#f2c866',
                 backgroundColor: 'rgba(215,164,67,0.14)',
                 yAxisID: 'taxa',
                 tension: 0.35,
                 pointRadius: 4,
                 borderWidth: 3,
-                pointBackgroundColor: '#d7a443',
-                pointBorderColor: '#0d1110',
+                pointBackgroundColor: '#f2c866',
+                pointBorderColor: '#050505',
                 pointBorderWidth: 2,
                 borderDash: [4, 4]
             });
@@ -288,7 +288,7 @@ const Analise = () => {
                         mode: 'index',
                         intersect: false,
                         backgroundColor: 'rgba(13, 17, 16, 0.97)',
-                        borderColor: 'rgba(64, 196, 141, 0.28)',
+                        borderColor: 'rgba(212, 175, 55, 0.28)',
                         borderWidth: 1,
                         titleColor: '#f3efe5',
                         bodyColor: '#e8e2d3',
@@ -314,24 +314,24 @@ const Analise = () => {
                 scales: {
                     x: {
                         display: true,
-                        title: { display: true, text: 'Período', color: '#a2b0c2', font: { weight: '700' } },
-                        ticks: { color: '#a2b0c2', maxRotation: 0, autoSkipPadding: 18 },
+                        title: { display: true, text: 'Período', color: '#c8b98b', font: { weight: '700' } },
+                        ticks: { color: '#c8b98b', maxRotation: 0, autoSkipPadding: 18 },
                         grid: { color: 'rgba(211,220,232,0.07)', drawBorder: false }
                     },
                     preco: {
                         type: 'linear',
                         display: chkPrecos,
                         position: 'left',
-                        title: { display: true, text: 'Preço (R$)', color: '#a2b0c2', font: { weight: '700' } },
-                        ticks: { color: '#a2b0c2' },
+                        title: { display: true, text: 'Preço (R$)', color: '#c8b98b', font: { weight: '700' } },
+                        ticks: { color: '#c8b98b' },
                         grid: { color: 'rgba(211,220,232,0.08)', drawBorder: false }
                     },
                     taxa: {
                         type: 'linear',
                         display: chkSelic || chkInflacao,
                         position: 'right',
-                        title: { display: true, text: 'Taxa (%)', color: '#a2b0c2', font: { weight: '700' } },
-                        ticks: { color: '#a2b0c2' },
+                        title: { display: true, text: 'Taxa (%)', color: '#c8b98b', font: { weight: '700' } },
+                        ticks: { color: '#c8b98b' },
                         grid: { drawOnChartArea: false, drawBorder: false }
                     }
                 },
@@ -680,7 +680,7 @@ const Analise = () => {
     const fontesDados = [
         {
             nome: 'Banco Central do Brasil / SGS',
-            uso: 'Séries de Selic e IPCA usadas nos indicadores e no gráfico.',
+            uso: 'Séries de Selic e IPCA usadas nos indicadores e nas comparações.',
             status: 'Conectado'
         },
         {
@@ -709,7 +709,7 @@ const Analise = () => {
             text: periodo === 'all' ? 'Todo o historico disponivel' : `Ultimos ${periodo} meses`
         },
         {
-            label: 'Series no grafico',
+            label: 'Séries na análise',
             value: `${seriesAtivas.length}`,
             text: seriesAtivas.length ? seriesAtivas.join(', ') : 'Nenhuma serie ativa'
         },
@@ -754,7 +754,7 @@ const Analise = () => {
                     <h2>Leitura rápida do cenário atual</h2>
                     <p>
                         Os cards abaixo mostram apenas informações já disponíveis na página: Selic,
-                        IPCA, produtos selecionados e séries ativas no gráfico.
+                        IPCA, produtos selecionados e séries ativas na comparação.
                     </p>
                 </div>
                 <div className="analise-section-meta">
@@ -862,9 +862,9 @@ const Analise = () => {
             </section>
 
             <div className="ec-card analise-config-card">
-                <h2>Configuração da análise</h2>
+                <h2>Monte sua leitura</h2>
 
-                <p>Defina quais variáveis entram no gráfico e quais produtos serão comparados.</p>
+                <p>Escolha os sinais econômicos e produtos que deseja comparar no cenário.</p>
                 <div className="ec-flex">
                     <div className="ec-flex-item">
                         <h3>Variáveis</h3>
@@ -890,8 +890,8 @@ const Analise = () => {
             </div>
 
             <div className="ec-card analise-products-card">
-                <h2>Seleção de Produtos</h2>
-                <p>Pesquise por nome, categoria ou sinônimos e adicione os produtos disponíveis ao gráfico.</p>
+                <h2>Cesta de produtos</h2>
+                <p>Pesquise por nome, categoria ou sinônimos e adicione os itens disponíveis à comparação.</p>
 
                 <div style={{ position: 'relative', marginBottom: 20 }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -1028,7 +1028,7 @@ const Analise = () => {
             <div id="graficos" className="ec-card analise-chart-card">
                 <div className="analise-chart-header">
                     <div>
-                        <h2>Gráfico Interativo</h2>
+                        <h2>Tendências do cenário</h2>
                         <p>Compare a evolução dos preços selecionados com Selic e IPCA no período escolhido.</p>
                     </div>
                     <div className="ec-chart-actions">
@@ -1051,7 +1051,7 @@ const Analise = () => {
                 <p className="analise-chart-note">
                     Use a legenda para identificar cada série. Preços usam o eixo da esquerda; Selic e IPCA usam o eixo da direita. A faixa em destaque marca o recorte mais recente.
                 </p>
-                <div className="analise-chart-insights" aria-label="Resumo do grafico">
+                <div className="analise-chart-insights" aria-label="Resumo da comparação">
                     {chartReadingCards.map((item) => (
                         <article key={item.label}>
                             <span>{item.label}</span>

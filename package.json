@@ -11,7 +11,7 @@
     "dev": "python main.py"
   },
   "engines": {
-    "node": ">=20 <21"
+    "node": ">=20.19 <21"
   },
   "devDependencies": {
     "playwright": "^1.61.1"

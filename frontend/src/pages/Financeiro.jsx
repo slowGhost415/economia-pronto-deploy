@@ -4,34 +4,68 @@ import {
     listarMetas, criarMeta, atualizarMeta, deletarMeta,
     listarInvestimentos, criarInvestimento, deletarInvestimento
 } from '../services/financeiroService';
+import { buscarIndicadoresBCB } from '../data/dadosEconomicos';
 import { Chart, BarController, BarElement, LinearScale, CategoryScale, Legend, Title, Tooltip, ArcElement, DoughnutController } from 'chart.js';
 
 Chart.register(BarController, BarElement, LinearScale, CategoryScale, Legend, Title, Tooltip, ArcElement, DoughnutController);
 
 const CATEGORIAS_DESPESA = ['Alimentação', 'Moradia', 'Transporte', 'Saúde', 'Educação', 'Lazer', 'Outros'];
 const CATEGORIAS_RECEITA = ['Salário', 'Freelance', 'Investimentos', 'Outros'];
-const TIPOS_INVESTIMENTO = ['Renda Fixa', 'Tesouro Direto', 'CDB', 'Ações', 'FIIs', 'Criptomoedas', 'Outros'];
+const TIPOS_INVESTIMENTO = ['CDB', 'LCI', 'LCA', 'Tesouro Selic', 'Tesouro IPCA+', 'Fundo DI', 'Ações', 'FIIs', 'Outros'];
 
 const fmt = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-const Financeiro = () => {
-    const [aba, setAba] = useState('dashboard');
+const annualizarTaxaDiaria = (taxaDiaria) => {
+    const taxa = Number(taxaDiaria || 0);
+    if (!Number.isFinite(taxa) || taxa <= 0) return null;
+    return (Math.pow(1 + taxa / 100, 252) - 1) * 100;
+};
+
+const irRendaFixa = (dias, isento) => {
+    if (isento) return 0;
+    if (dias <= 180) return 22.5;
+    if (dias <= 360) return 20;
+    if (dias <= 720) return 17.5;
+    return 15;
+};
+
+const perfisInvestimento = {
+    CDB: { percentualCdi: 100, isento: false, liquidez: 'D+1', risco: 'Crédito privado com proteção do FGC dentro dos limites aplicáveis.' },
+    LCI: { percentualCdi: 90, isento: true, liquidez: 'Carência', risco: 'Crédito privado isento de IR para pessoa física, conforme regra vigente.' },
+    LCA: { percentualCdi: 90, isento: true, liquidez: 'Carência', risco: 'Crédito privado isento de IR para pessoa física, conforme regra vigente.' },
+    'Tesouro Selic': { percentualCdi: 100, isento: false, liquidez: 'D+1', risco: 'Título público pós-fixado, sujeito a marcação a mercado.' },
+    'Fundo DI': { percentualCdi: 95, isento: false, liquidez: 'D+0/D+1', risco: 'Verifique taxa de administração e come-cotas.' },
+};
+
+const Financeiro = ({ user }) => {
+    const [aba, setAba] = useState('resumo');
     const [resumo, setResumo] = useState(null);
     const [transacoes, setTransacoes] = useState([]);
     const [metas, setMetas] = useState([]);
     const [investimentos, setInvestimentos] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [notif, setNotif] = useState(null);
+    const [benchmarks, setBenchmarks] = useState({ cdiAnual: null, selicAnual: null, lastUpdate: null });
 
     const [formTx, setFormTx] = useState({ tipo: 'despesa', categoria: 'Alimentação', descricao: '', valor: '', data: '' });
     const [formMeta, setFormMeta] = useState({ nome: '', valorAlvo: '', prazo: '' });
-    const [formInv, setFormInv] = useState({ nome: '', tipo: 'Renda Fixa', valor: '', taxa: '' });
+    const [formInv, setFormInv] = useState({ nome: '', tipo: 'CDB', valor: '', taxa: '' });
+    const [verificador, setVerificador] = useState({
+        tipo: 'CDB',
+        valor: '10000',
+        prazoDias: '720',
+        percentualCdi: '100',
+        taxaPrefixada: '',
+        isento: 'nao',
+        liquidez: 'D+1',
+    });
     const [filtroMes, setFiltroMes] = useState('');
 
     const barChartRef = useRef(null);
     const doughnutRef = useRef(null);
     const barChartInstance = useRef(null);
     const doughnutInstance = useRef(null);
+    const isDemo = Boolean(user?.demo);
 
     const mostrarNotif = (type, message) => {
         setNotif({ type, message });
@@ -40,6 +74,31 @@ const Financeiro = () => {
 
     const carregar = async () => {
         setCarregando(true);
+        if (isDemo) {
+            const demoTransacoes = [
+                { id: 1, tipo: 'receita', categoria: 'Salário', descricao: 'Receita demonstrativa', valor: 5200, data: new Date().toISOString() },
+                { id: 2, tipo: 'despesa', categoria: 'Moradia', descricao: 'Aluguel demonstrativo', valor: 1500, data: new Date().toISOString() },
+                { id: 3, tipo: 'despesa', categoria: 'Alimentação', descricao: 'Mercado demonstrativo', valor: 680, data: new Date().toISOString() },
+            ];
+            const demoInvestimentos = [
+                { id: 1, nome: 'CDB 100% CDI', tipo: 'CDB', valor: 10000, taxa: 10.65 },
+                { id: 2, nome: 'LCI 90% CDI', tipo: 'LCI', valor: 8000, taxa: 9.6 },
+            ];
+            const receitas = demoTransacoes.filter(t => t.tipo === 'receita').reduce((s, t) => s + t.valor, 0);
+            const despesas = demoTransacoes.filter(t => t.tipo === 'despesa').reduce((s, t) => s + t.valor, 0);
+            setTransacoes((prev) => prev.length ? prev : demoTransacoes);
+            setMetas((prev) => prev.length ? prev : [{ id: 1, nome: 'Reserva de emergência', valorAlvo: 15000, valorAtual: 6200, prazo: new Date(Date.now() + 1000 * 60 * 60 * 24 * 180).toISOString() }]);
+            setInvestimentos((prev) => prev.length ? prev : demoInvestimentos);
+            setResumo({
+                receitas,
+                despesas,
+                saldo: receitas - despesas,
+                gastosPorCategoria: { Moradia: 1500, Alimentação: 680 },
+                alertas: ['Modo demonstração: dados salvos apenas nesta sessão.'],
+            });
+            setCarregando(false);
+            return;
+        }
         try {
             const [res, txs, mts, invs] = await Promise.all([
                 resumoFinanceiro(),
@@ -58,10 +117,27 @@ const Financeiro = () => {
         }
     };
 
-    useEffect(() => { carregar(); }, [filtroMes]);
+    useEffect(() => { carregar(); }, [filtroMes, isDemo]);
 
     useEffect(() => {
-        if (aba !== 'dashboard' || !resumo) return;
+        let mounted = true;
+        buscarIndicadoresBCB()
+            .then((indicadores) => {
+                if (!mounted) return;
+                setBenchmarks({
+                    cdiAnual: annualizarTaxaDiaria(indicadores?.cdi) || 10.65,
+                    selicAnual: annualizarTaxaDiaria(indicadores?.selic) || 10.65,
+                    lastUpdate: indicadores?.lastUpdate || null,
+                });
+            })
+            .catch(() => {
+                if (mounted) setBenchmarks({ cdiAnual: 10.65, selicAnual: 10.65, lastUpdate: null });
+            });
+        return () => { mounted = false; };
+    }, []);
+
+    useEffect(() => {
+        if (aba !== 'resumo' || !resumo) return;
         const labels = Object.keys(resumo.gastosPorCategoria);
         const valores = Object.values(resumo.gastosPorCategoria);
 
@@ -71,9 +147,9 @@ const Financeiro = () => {
                 type: 'doughnut',
                 data: {
                     labels,
-                    datasets: [{ data: valores, backgroundColor: ['#4A5C6A','#9BA8AB','#CCD0CF','#253745','#6B7C88','#3D5166','#8FA0A8'], borderWidth: 0 }]
+                    datasets: [{ data: valores, backgroundColor: ['#d4af37','#b8860b','#f0d98a','#8c6f25','#5f4a17','#c8a84a','#fff1b8'], borderWidth: 0 }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#CCD0CF', padding: 12 } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#f5e7bd', padding: 12 } } } }
             });
         }
 
@@ -86,7 +162,7 @@ const Financeiro = () => {
                     datasets: [{
                         label: 'R$',
                         data: [resumo.receitas, resumo.despesas, resumo.saldo],
-                        backgroundColor: ['#4caf7d', '#e05252', resumo.saldo >= 0 ? '#4caf7d' : '#e05252'],
+                        backgroundColor: ['#d4af37', '#d76a5f', resumo.saldo >= 0 ? '#d4af37' : '#d76a5f'],
                         borderRadius: 8,
                     }]
                 },
@@ -94,8 +170,8 @@ const Financeiro = () => {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: '#9BA8AB' }, grid: { color: '#253745' } },
-                        y: { ticks: { color: '#9BA8AB', callback: v => `R$ ${v.toLocaleString('pt-BR')}` }, grid: { color: '#253745' } }
+                        x: { ticks: { color: '#bba46a' }, grid: { color: 'rgba(212,175,55,0.12)' } },
+                        y: { ticks: { color: '#bba46a', callback: v => `R$ ${v.toLocaleString('pt-BR')}` }, grid: { color: 'rgba(212,175,55,0.12)' } }
                     }
                 }
             });
@@ -108,6 +184,18 @@ const Financeiro = () => {
 
     const submitTransacao = async (e) => {
         e.preventDefault();
+        if (isDemo) {
+            const nova = {
+                id: Date.now(),
+                ...formTx,
+                valor: parseFloat(formTx.valor),
+                data: formTx.data ? new Date(formTx.data).toISOString() : new Date().toISOString(),
+            };
+            setTransacoes((prev) => [nova, ...prev]);
+            setFormTx({ tipo: 'despesa', categoria: 'Alimentação', descricao: '', valor: '', data: '' });
+            mostrarNotif('success', 'Transação adicionada na demonstração');
+            return;
+        }
         try {
             await criarTransacao({ ...formTx, valor: parseFloat(formTx.valor) });
             setFormTx({ tipo: 'despesa', categoria: 'Alimentação', descricao: '', valor: '', data: '' });
@@ -120,6 +208,18 @@ const Financeiro = () => {
 
     const submitMeta = async (e) => {
         e.preventDefault();
+        if (isDemo) {
+            setMetas((prev) => [{
+                id: Date.now(),
+                nome: formMeta.nome,
+                valorAlvo: parseFloat(formMeta.valorAlvo),
+                valorAtual: 0,
+                prazo: formMeta.prazo,
+            }, ...prev]);
+            setFormMeta({ nome: '', valorAlvo: '', prazo: '' });
+            mostrarNotif('success', 'Meta criada na demonstração');
+            return;
+        }
         try {
             await criarMeta({ ...formMeta, valorAlvo: parseFloat(formMeta.valorAlvo) });
             setFormMeta({ nome: '', valorAlvo: '', prazo: '' });
@@ -132,9 +232,20 @@ const Financeiro = () => {
 
     const submitInvestimento = async (e) => {
         e.preventDefault();
+        if (isDemo) {
+            setInvestimentos((prev) => [{
+                id: Date.now(),
+                ...formInv,
+                valor: parseFloat(formInv.valor),
+                taxa: parseFloat(formInv.taxa),
+            }, ...prev]);
+            setFormInv({ nome: '', tipo: 'CDB', valor: '', taxa: '' });
+            mostrarNotif('success', 'Investimento adicionado na demonstração');
+            return;
+        }
         try {
             await criarInvestimento({ ...formInv, valor: parseFloat(formInv.valor), taxa: parseFloat(formInv.taxa) });
-            setFormInv({ nome: '', tipo: 'Renda Fixa', valor: '', taxa: '' });
+            setFormInv({ nome: '', tipo: 'CDB', valor: '', taxa: '' });
             mostrarNotif('success', 'Investimento adicionado');
             carregar();
         } catch (err) {
@@ -142,13 +253,43 @@ const Financeiro = () => {
         }
     };
 
+    const aplicarPerfil = (tipo) => {
+        const perfil = perfisInvestimento[tipo] || perfisInvestimento.CDB;
+        setVerificador((prev) => ({
+            ...prev,
+            tipo,
+            percentualCdi: String(perfil.percentualCdi),
+            isento: perfil.isento ? 'sim' : 'nao',
+            liquidez: perfil.liquidez,
+        }));
+    };
+
     const totalInvestido = investimentos.reduce((s, i) => s + i.valor, 0);
     const rendimentoEstimado = investimentos.reduce((s, i) => s + i.valor * (i.taxa / 100), 0);
+    const cdiReferencia = Number(benchmarks.cdiAnual || 10.65);
+    const selicReferencia = Number(benchmarks.selicAnual || cdiReferencia);
+    const diasVerificador = Math.max(1, Number.parseInt(verificador.prazoDias, 10) || 1);
+    const valorVerificador = Math.max(0, Number(verificador.valor || 0));
+    const taxaAnualVerificador = verificador.taxaPrefixada
+        ? Number(verificador.taxaPrefixada)
+        : cdiReferencia * (Number(verificador.percentualCdi || 0) / 100);
+    const rendimentoBruto = valorVerificador * (Math.pow(1 + taxaAnualVerificador / 100, diasVerificador / 365) - 1);
+    const aliquotaIr = irRendaFixa(diasVerificador, verificador.isento === 'sim');
+    const impostoEstimado = Math.max(0, rendimentoBruto * (aliquotaIr / 100));
+    const rendimentoLiquido = rendimentoBruto - impostoEstimado;
+    const rentabilidadeLiquida = valorVerificador > 0 ? (rendimentoLiquido / valorVerificador) * (365 / diasVerificador) * 100 : 0;
+    const equivalenteCdi = cdiReferencia > 0 ? (rentabilidadeLiquida / cdiReferencia) * 100 : 0;
+    const avaliacaoInvestimento = equivalenteCdi >= 100
+        ? 'Competitivo frente ao CDI no cenário informado.'
+        : equivalenteCdi >= 85
+            ? 'Razoável, mas compare liquidez, risco e isenção.'
+            : 'Abaixo do CDI de referência; vale buscar alternativas.';
 
     const abas = [
-        { id: 'dashboard', label: 'Resumo' },
+        { id: 'resumo', label: 'Resumo' },
         { id: 'transacoes', label: 'Transações' },
         { id: 'metas', label: 'Metas' },
+        { id: 'verificador', label: 'Verificador' },
         { id: 'investimentos', label: 'Investimentos' },
     ];
 
@@ -164,7 +305,7 @@ const Financeiro = () => {
                 ))}
             </div>
 
-            {aba === 'dashboard' && (
+            {aba === 'resumo' && (
                 <>
                     <div className="ec-indicadores-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
                         <div className="ec-indicador-card">
@@ -292,7 +433,7 @@ const Financeiro = () => {
                                         <span className={t.tipo === 'receita' ? 'ec-positivo' : 'ec-negativo'} style={{ fontWeight: 600 }}>
                                             {t.tipo === 'receita' ? '+' : '-'}{fmt(t.valor)}
                                         </span>
-                                        <button className="ec-btn-delete" onClick={async () => { await deletarTransacao(t.id); carregar(); }} title="Remover">&#10005;</button>
+                                        <button className="ec-btn-delete" onClick={async () => { if (isDemo) { setTransacoes(prev => prev.filter(item => item.id !== t.id)); return; } await deletarTransacao(t.id); carregar(); }} title="Remover">&#10005;</button>
                                     </div>
                                 </div>
                             ))
@@ -334,7 +475,7 @@ const Financeiro = () => {
                                     <div key={m.id} className="ec-card ec-meta-card">
                                         <div className="ec-meta-header">
                                             <span className="ec-meta-nome">{m.nome}</span>
-                                            <button className="ec-btn-delete" onClick={async () => { await deletarMeta(m.id); carregar(); }} title="Remover">&#10005;</button>
+                                            <button className="ec-btn-delete" onClick={async () => { if (isDemo) { setMetas(prev => prev.filter(item => item.id !== m.id)); return; } await deletarMeta(m.id); carregar(); }} title="Remover">&#10005;</button>
                                         </div>
                                         <div className="ec-meta-valores">
                                             <span>{fmt(m.valorAtual)} <span style={{ color: 'var(--c4)' }}>de {fmt(m.valorAlvo)}</span></span>
@@ -347,12 +488,107 @@ const Financeiro = () => {
                                         </div>
                                         <div style={{ display: 'flex', gap: 8, marginTop: 10, alignItems: 'center' }}>
                                             <input className="ec-input" type="number" min="0" step="0.01" placeholder="Atualizar valor atual" style={{ flex: 1 }}
-                                                onBlur={async (e) => { if (e.target.value) { await atualizarMeta(m.id, parseFloat(e.target.value)); e.target.value = ''; carregar(); } }} />
+                                                onBlur={async (e) => { if (e.target.value) { const valorAtual = parseFloat(e.target.value); if (isDemo) { setMetas(prev => prev.map(item => item.id === m.id ? { ...item, valorAtual } : item)); e.target.value = ''; return; } await atualizarMeta(m.id, valorAtual); e.target.value = ''; carregar(); } }} />
                                         </div>
                                     </div>
                                 );
                             })
                         }
+                    </div>
+                </>
+            )}
+
+            {aba === 'verificador' && (
+                <>
+                    <section className="investment-check-hero">
+                        <div>
+                            <span className="eyebrow">Verificador de investimentos</span>
+                            <h1>Compare CDI, prazo, imposto e liquidez antes de aplicar.</h1>
+                            <p>
+                                Use como simulação educativa: ajuste taxa, prazo, isenção e valor para comparar
+                                CDB, LCI, LCA, Tesouro Selic e fundos DI.
+                            </p>
+                        </div>
+                        <div className="benchmark-grid">
+                            <article>
+                                <span>CDI referência</span>
+                                <strong>{cdiReferencia.toFixed(2)}% a.a.</strong>
+                            </article>
+                            <article>
+                                <span>Selic referência</span>
+                                <strong>{selicReferencia.toFixed(2)}% a.a.</strong>
+                            </article>
+                            <article>
+                                <span>Atualização</span>
+                                <strong>{benchmarks.lastUpdate ? new Date(benchmarks.lastUpdate).toLocaleDateString('pt-BR') : 'Cache local'}</strong>
+                            </article>
+                        </div>
+                    </section>
+
+                    <div className="investment-check-grid">
+                        <div className="ec-card">
+                            <h2>Cenário de aplicação</h2>
+                            <p>Selecione um perfil ou informe uma taxa prefixada para substituir o percentual do CDI.</p>
+
+                            <div className="investment-profile-row">
+                                {Object.keys(perfisInvestimento).map((tipo) => (
+                                    <button
+                                        key={tipo}
+                                        type="button"
+                                        className={verificador.tipo === tipo ? 'active' : ''}
+                                        onClick={() => aplicarPerfil(tipo)}
+                                    >
+                                        {tipo}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="ec-fin-form-row" style={{ flexWrap: 'wrap', gap: 16, marginTop: 18 }}>
+                                <div className="ec-fin-field">
+                                    <label>Valor aplicado</label>
+                                    <input className="ec-input" type="number" min="0" step="100" value={verificador.valor} onChange={(e) => setVerificador(p => ({ ...p, valor: e.target.value }))} />
+                                </div>
+                                <div className="ec-fin-field">
+                                    <label>Prazo em dias</label>
+                                    <input className="ec-input" type="number" min="1" step="30" value={verificador.prazoDias} onChange={(e) => setVerificador(p => ({ ...p, prazoDias: e.target.value }))} />
+                                </div>
+                                <div className="ec-fin-field">
+                                    <label>% do CDI</label>
+                                    <input className="ec-input" type="number" min="0" step="1" value={verificador.percentualCdi} onChange={(e) => setVerificador(p => ({ ...p, percentualCdi: e.target.value, taxaPrefixada: '' }))} />
+                                </div>
+                                <div className="ec-fin-field">
+                                    <label>Taxa prefixada a.a. opcional</label>
+                                    <input className="ec-input" type="number" min="0" step="0.01" value={verificador.taxaPrefixada} onChange={(e) => setVerificador(p => ({ ...p, taxaPrefixada: e.target.value }))} placeholder="Ex: 12.35" />
+                                </div>
+                                <div className="ec-fin-field">
+                                    <label>Isento de IR?</label>
+                                    <select className="ec-select" value={verificador.isento} onChange={(e) => setVerificador(p => ({ ...p, isento: e.target.value }))}>
+                                        <option value="nao">Não</option>
+                                        <option value="sim">Sim</option>
+                                    </select>
+                                </div>
+                                <div className="ec-fin-field">
+                                    <label>Liquidez</label>
+                                    <input className="ec-input" value={verificador.liquidez} onChange={(e) => setVerificador(p => ({ ...p, liquidez: e.target.value }))} />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="ec-card investment-result-card">
+                            <span className="eyebrow">Resultado estimado</span>
+                            <h2>{avaliacaoInvestimento}</h2>
+                            <div className="investment-result-list">
+                                <div><span>Taxa usada</span><strong>{taxaAnualVerificador.toFixed(2)}% a.a.</strong></div>
+                                <div><span>Rendimento bruto</span><strong>{fmt(rendimentoBruto)}</strong></div>
+                                <div><span>IR estimado</span><strong>{aliquotaIr.toFixed(1)}% / {fmt(impostoEstimado)}</strong></div>
+                                <div><span>Rendimento líquido</span><strong>{fmt(rendimentoLiquido)}</strong></div>
+                                <div><span>Equivalente líquido</span><strong>{equivalenteCdi.toFixed(1)}% do CDI</strong></div>
+                                <div><span>Liquidez</span><strong>{verificador.liquidez}</strong></div>
+                            </div>
+                            <p>
+                                {perfisInvestimento[verificador.tipo]?.risco || 'Compare risco, prazo, emissor, garantia, liquidez e tributação antes de decidir.'}
+                            </p>
+                        </div>
                     </div>
                 </>
             )}
@@ -415,7 +651,7 @@ const Financeiro = () => {
                                             <div style={{ fontWeight: 600, color: 'var(--c5)' }}>{fmt(inv.valor)}</div>
                                             <div style={{ fontSize: '0.8rem', color: 'var(--c-success)' }}>+{fmt(inv.valor * (inv.taxa / 100))}/ano</div>
                                         </div>
-                                        <button className="ec-btn-delete" onClick={async () => { await deletarInvestimento(inv.id); carregar(); }} title="Remover">&#10005;</button>
+                                        <button className="ec-btn-delete" onClick={async () => { if (isDemo) { setInvestimentos(prev => prev.filter(item => item.id !== inv.id)); return; } await deletarInvestimento(inv.id); carregar(); }} title="Remover">&#10005;</button>
                                     </div>
                                 </div>
                             ))
