@@ -2,6 +2,8 @@
 
 Este projeto esta pronto para subir no Render usando o arquivo `render.yaml` da raiz.
 
+Documentacao completa de instalacao, ambientes e deploy: [`docs/SETUP_AND_DEPLOYMENT.md`](docs/SETUP_AND_DEPLOYMENT.md).
+
 ## Solucao rapida para colocar no ar agora
 
 Use o Render Blueprint. Nao use Vercel sozinho para este projeto, porque o
